@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Astra Market{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-4">Login</h2>
+                
+                <form method="POST" action="{% url 'login' %}" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="mb-3 form-check">
+                        <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="rememberMe" 
+                            name="remember_me"
+                        >
+                        <label class="form-check-label" for="rememberMe">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+
+                    <!-- Register Link -->
+                    <p class="text-center text-muted">
+                        Don't have an account? 
+                        <a href="{% url 'register' %}" class="text-decoration-none">Register here</a>
+                    </p>
+
+                    <!-- Forgot Password (optional) -->
+                    <p class="text-center">
+                        <a href="#" class="text-decoration-none text-secondary small">Forgot password?</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Astra Market{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-4">Create Account</h2>
+                
+                <form method="POST" action="{% url 'register' %}" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="fullName" 
+                            name="full_name"
+                            placeholder="Enter your full name"
+                            required
+                        >
+                        <small class="form-text text-muted">Maximum 150 characters</small>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password"
+                            placeholder="Enter your password"
+                            required
+                        >
+                        <small class="form-text text-muted">Minimum 8 characters</small>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="confirmPassword" 
+                            name="confirm_password"
+                            placeholder="Confirm your password"
+                            required
+                        >
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
+
+                    <!-- Login Link -->
+                    <p class="text-center text-muted">
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

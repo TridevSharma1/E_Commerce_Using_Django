@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Astra Market{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-lg mb-4">
+    <h1 class="display-4 fw-bold">Welcome to Astra Market</h1>
+    <p class="lead">Your one-stop online shopping destination for quality products.</p>
+    <hr class="my-4">
+    {% if user.is_authenticated %}
+        <p class="lead">Happy shopping, <strong>{{ user.full_name }}</strong>!</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'profile' %}" role="button">View Profile</a>
+    {% else %}
+        <p class="lead">Start shopping today by creating an account or logging in.</p>
+        <a class="btn btn-primary btn-lg me-2" href="{% url 'register' %}" role="button">Register</a>
+        <a class="btn btn-outline-primary btn-lg" href="{% url 'login' %}" role="button">Login</a>
+    {% endif %}
+</div>
+
+<!-- Featured Products Section (Example) -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="mb-4">Featured Products</h2>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="fs-1">📦</span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Product 1</h5>
+                <p class="card-text">Amazing product with great features.</p>
+                <a href="#" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="fs-1">🎁</span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Product 2</h5>
+                <p class="card-text">Premium quality at affordable prices.</p>
+                <a href="#" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="fs-1">⭐</span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Product 3</h5>
+                <p class="card-text">Top-rated products loved by customers.</p>
+                <a href="#" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
