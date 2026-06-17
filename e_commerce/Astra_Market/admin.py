@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
 from .models import CustomUser
+from .models import Feedback, Category, Product, CartItem, WishlistItem, Order, OrderItem
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -54,3 +55,10 @@ class CustomUserAdmin(BaseUserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Feedback)
+admin.site.register(Category)
+admin.site.register(Product)
+admin.site.register(CartItem)
+admin.site.register(WishlistItem)
+admin.site.register(Order)
+admin.site.register(OrderItem)

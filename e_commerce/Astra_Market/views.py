@@ -1,15 +1,20 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import CustomUser
+from django.db.models import Count, Q
+from decimal import Decimal
+from datetime import datetime
+from .models import CustomUser, Feedback, Product, Category, CartItem, WishlistItem, Order, OrderItem
+from django.views.decorators.http import require_POST
 
 
 def home(request):
     """
     Home page view.
     """
-    return render(request, 'home.html')
+    featured_products = Product.objects.all()[:4]
+    return render(request, 'home.html', {'featured_products': featured_products})
 
 
 def register(request):
@@ -102,4 +107,373 @@ def profile(request):
     """
     user = request.user
     return render(request, 'profile.html', {'user': user})
+
+
+def about(request):
+    """
+    About page.
+    """
+    return render(request, 'about.html')
+
+
+def products(request):
+    """
+    Products listing page.
+    """
+    query = request.GET.get('q', '').strip()
+    category_slug = request.GET.get('category', '').strip()
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    selected_category_name = ''
+
+    if query:
+        products = products.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+
+    if category_slug:
+        category = Category.objects.filter(slug=category_slug).first()
+        if category:
+            products = products.filter(category=category)
+            selected_category_name = category.name
+
+    feedbacks = Feedback.objects.order_by('-created_at')[:20]
+    return render(request, 'products.html', {
+        'products': products,
+        'categories': categories,
+        'query': query,
+        'selected_category': category_slug,
+        'selected_category_name': selected_category_name,
+        'feedbacks': feedbacks,
+    })
+
+
+def category(request):
+    """
+    Category listing page.
+    """
+    categories = Category.objects.annotate(product_count=Count('products'))
+    return render(request, 'category.html', {'categories': categories})
+
+
+def product_detail(request, slug):
+    """
+    Product detail page.
+    """
+    product = get_object_or_404(Product, slug=slug)
+    in_cart = False
+    in_wishlist = False
+    if request.user.is_authenticated:
+        in_cart = CartItem.objects.filter(user=request.user, product=product).exists()
+        in_wishlist = WishlistItem.objects.filter(user=request.user, product=product).exists()
+
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+    all_categories = Category.objects.all()
+    featured_products = Product.objects.exclude(id=product.id)[:6]
+    
+    return render(request, 'product_detail.html', {
+        'product': product,
+        'in_cart': in_cart,
+        'in_wishlist': in_wishlist,
+        'related_products': related_products,
+        'all_categories': all_categories,
+        'featured_products': featured_products,
+    })
+
+
+@login_required(login_url='login')
+def cart(request):
+    """
+    Shopping cart page.
+    """
+    cart_items = CartItem.objects.filter(user=request.user).select_related('product')
+    cart_total = sum(item.total_price for item in cart_items)
+    return render(request, 'cart.html', {
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+    })
+
+
+@login_required(login_url='login')
+def add_to_cart(request, slug):
+    """
+    Add a product to the cart.
+    """
+    product = get_object_or_404(Product, slug=slug)
+    cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+    if not created:
+        cart_item.quantity = min(cart_item.quantity + 1, 10)
+        cart_item.save()
+        messages.success(request, f'Updated quantity for {product.title} in your cart.')
+    else:
+        messages.success(request, f'Added {product.title} to your cart.')
+    return redirect('product_detail', slug=slug)
+
+
+@login_required(login_url='login')
+def remove_from_cart(request, slug):
+    """
+    Remove a product from the cart.
+    """
+    product = get_object_or_404(Product, slug=slug)
+    CartItem.objects.filter(user=request.user, product=product).delete()
+    messages.success(request, f'Removed {product.title} from your cart.')
+    return redirect('cart')
+
+
+@login_required(login_url='login')
+def update_cart_quantity(request, slug):
+    """
+    Update quantity of a product in the cart.
+    """
+    if request.method == 'POST':
+        product = get_object_or_404(Product, slug=slug)
+        quantity = int(request.POST.get('quantity', 1))
+        
+        # Validate quantity
+        if quantity < 1:
+            quantity = 1
+        elif quantity > 10:
+            quantity = 10
+        
+        cart_item = get_object_or_404(CartItem, user=request.user, product=product)
+        cart_item.quantity = quantity
+        cart_item.save()
+        messages.success(request, f'Updated quantity for {product.title}.')
+    
+    return redirect('cart')
+
+
+@login_required(login_url='login')
+def wishlist(request):
+    """
+    Wishlist page.
+    """
+    items = WishlistItem.objects.filter(user=request.user).select_related('product')
+    return render(request, 'wishlist.html', {'items': items})
+
+
+@login_required(login_url='login')
+def add_to_wishlist(request, slug):
+    """
+    Add a product to the wishlist.
+    """
+    product = get_object_or_404(Product, slug=slug)
+    wishlist_item, created = WishlistItem.objects.get_or_create(user=request.user, product=product)
+    if created:
+        messages.success(request, f'Added {product.title} to your wishlist.')
+    else:
+        messages.info(request, f'{product.title} is already in your wishlist.')
+    return redirect('product_detail', slug=slug)
+
+
+@login_required(login_url='login')
+def remove_from_wishlist(request, slug):
+    """
+    Remove an item from the wishlist.
+    """
+    product = get_object_or_404(Product, slug=slug)
+    WishlistItem.objects.filter(user=request.user, product=product).delete()
+    messages.success(request, f'Removed {product.title} from your wishlist.')
+    return redirect('wishlist')
+
+
+@login_required(login_url='login')
+def checkout(request):
+    """
+    Checkout page - show address confirmation before creating order.
+    """
+    cart_items = CartItem.objects.filter(user=request.user).select_related('product')
+    if not cart_items:
+        messages.warning(request, 'Your cart is empty. Add items before checkout.')
+        return redirect('cart')
+
+    cart_total = sum(item.total_price for item in cart_items)
+    user = request.user
+    
+    context = {
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+        'user': user,
+    }
+    
+    return render(request, 'checkout.html', context)
+
+
+@login_required(login_url='login')
+def confirm_checkout(request):
+    """
+    Confirm checkout and create order with address.
+    """
+    if request.method == 'POST':
+        cart_items = CartItem.objects.filter(user=request.user).select_related('product')
+        if not cart_items:
+            messages.warning(request, 'Your cart is empty.')
+            return redirect('cart')
+
+        # Get address information
+        shipping_name = request.POST.get('shipping_name', request.user.full_name)
+        shipping_address = request.POST.get('shipping_address', '').strip()
+        shipping_phone = request.POST.get('shipping_phone', '').strip()
+        use_saved_address = request.POST.get('use_saved_address') == 'on'
+        
+        # If using saved address from profile
+        if use_saved_address:
+            shipping_address = request.user.address or ''
+            shipping_phone = request.user.mobile or ''
+        
+        # Validate address
+        if not shipping_address:
+            messages.error(request, 'Please provide a shipping address.')
+            return redirect('checkout')
+        
+        if not shipping_phone:
+            messages.error(request, 'Please provide a phone number.')
+            return redirect('checkout')
+        
+        # Create order with address
+        total = sum(item.total_price for item in cart_items)
+        order = Order.objects.create(
+            user=request.user,
+            total_price=Decimal(total),
+            shipping_name=shipping_name,
+            shipping_address=shipping_address,
+            shipping_phone=shipping_phone,
+            status='pending'
+        )
+
+        # Create order items
+        order_items = []
+        for item in cart_items:
+            order_items.append(OrderItem(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            ))
+        OrderItem.objects.bulk_create(order_items)
+        
+        # Clear cart
+        cart_items.delete()
+
+        messages.success(request, f'Order #{order.id} placed successfully!')
+        return redirect('orders')
+    
+    return redirect('checkout')
+
+
+@login_required(login_url='login')
+def orders(request):
+    """
+    My Orders page (requires login).
+    """
+    orders = Order.objects.filter(user=request.user).prefetch_related('items__product')
+    return render(request, 'orders.html', {'orders': orders})
+
+
+@login_required(login_url='login')
+def cancel_order(request, order_id):
+    """
+    Display order cancellation form with reason selection.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # Check if order can be cancelled (only pending orders)
+    if order.status != 'pending':
+        messages.error(request, 'Only pending orders can be cancelled.')
+        return redirect('orders')
+    
+    cancellation_reasons = Order.CANCELLATION_REASONS
+    return render(request, 'cancel_order.html', {
+        'order': order,
+        'cancellation_reasons': cancellation_reasons,
+    })
+
+
+@login_required(login_url='login')
+def confirm_cancel_order(request, order_id):
+    """
+    Process order cancellation with reason.
+    """
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        
+        # Check if order can be cancelled
+        if order.status != 'pending':
+            messages.error(request, 'Only pending orders can be cancelled.')
+            return redirect('orders')
+        
+        # Get cancellation reason and message
+        reason = request.POST.get('cancellation_reason', '').strip()
+        message = request.POST.get('cancellation_message', '').strip()
+        
+        # Validate reason is selected
+        valid_reasons = [choice[0] for choice in Order.CANCELLATION_REASONS]
+        if reason not in valid_reasons:
+            messages.error(request, 'Please select a valid cancellation reason.')
+            return redirect('cancel_order', order_id=order_id)
+        
+        # Validate message if "other" is selected
+        if reason == 'other' and not message:
+            messages.error(request, 'Please provide a reason for cancellation.')
+            return redirect('cancel_order', order_id=order_id)
+        
+        # Update order status
+        order.status = 'cancelled'
+        order.cancellation_reason = reason
+        order.cancellation_message = message if message else None
+        order.cancelled_at = datetime.now()
+        order.save()
+        
+        messages.success(request, f'Order #{order.id} has been cancelled successfully.')
+        return redirect('orders')
+    
+    return redirect('orders')
+
+
+def contact(request):
+    """
+    Contact page.
+    """
+    if request.method == 'POST':
+        # For now simply acknowledge and redirect back
+        messages.success(request, 'Thanks for contacting us. We will get back to you soon.')
+        return redirect('contact')
+    return render(request, 'contact.html')
+
+
+@login_required(login_url='login')
+def support(request):
+    """
+    Support page.
+    """
+    return render(request, 'support.html')
+
+
+@require_POST
+def submit_feedback(request):
+    """Handle feedback submissions from the products page."""
+    comment = request.POST.get('comment', '').strip()
+    full_name = request.POST.get('full_name', '').strip()
+    rating = int(request.POST.get('rating') or 0)
+    profile_image = request.FILES.get('profile_image')
+
+    # enforce 500-word limit
+    word_count = len(comment.split())
+    if word_count > 500:
+        messages.error(request, f'Feedback is too long ({word_count} words). Limit is 500 words.')
+        return redirect('products')
+
+    feedback = Feedback.objects.create(
+        user=request.user if request.user.is_authenticated else None,
+        full_name=full_name or (request.user.full_name if request.user.is_authenticated else 'Anonymous'),
+        rating=max(1, min(5, rating)),
+        comment=comment,
+    )
+
+    if profile_image:
+        feedback.profile_image.save(profile_image.name, profile_image)
+
+    messages.success(request, 'Thank you for your feedback!')
+    return redirect('products')
 
