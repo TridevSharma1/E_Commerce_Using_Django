@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Astra Market{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold">About Astra Market</h1>
+            <p class="lead text-muted">Delivering quality products with care — our mission is to make shopping delightful.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="p-4 bg-white shadow-sm rounded">
+                <h4 class="fw-bold">Our Mission</h4>
+                <p class="small text-muted">To provide customers with high-quality products and excellent service by combining careful curation, fast delivery, and outstanding support.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white shadow-sm rounded">
+                <h4 class="fw-bold">Our Vision</h4>
+                <p class="small text-muted">To become the most trusted online marketplace where customers find value, variety, and convenience.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white shadow-sm rounded">
+                <h4 class="fw-bold">Our Values</h4>
+                <ul class="small text-muted mb-0">
+                    <li>Customer First</li>
+                    <li>Integrity & Transparency</li>
+                    <li>Quality Over Quantity</li>
+                    <li>Continuous Improvement</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="fw-bold">Our Team</h3>
+            <p class="text-muted small">A small group of passionate professionals focused on delivering the best shopping experience.</p>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:1.5rem;">AS</div>
+                    <h5 class="card-title mb-1">Anita Sharma</h5>
+                    <p class="small text-muted">Founder & CEO</p>
+                    <p class="small text-muted">Anita leads our team with a focus on customer experience and product curation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:1.5rem;">RK</div>
+                    <h5 class="card-title mb-1">Rohit Kumar</h5>
+                    <p class="small text-muted">Head of Products</p>
+                    <p class="small text-muted">Rohit manages our product selection and supplier partnerships.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:1.5rem;">MS</div>
+                    <h5 class="card-title mb-1">Meera Singh</h5>
+                    <p class="small text-muted">Head of Operations</p>
+                    <p class="small text-muted">Meera ensures timely delivery and smooth logistics for our customers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <h4 class="fw-bold">Organization Details</h4>
+            <p class="small text-muted mb-1"><strong>Registered Name:</strong> Astra Market Pvt Ltd</p>
+            <p class="small text-muted mb-1"><strong>Address:</strong> 123 Market Street, Cityname, State - 123456</p>
+            <p class="small text-muted mb-1"><strong>GST/Tax ID:</strong> 12ABCDE3456F7Z8</p>
+            <p class="small text-muted mb-1"><strong>Email:</strong> <a href="mailto:info@astramarket.com">info@astramarket.com</a></p>
+            <p class="small text-muted"><strong>Phone:</strong> <a href="tel:+911234567890">+91 12345 67890</a></p>
+        </div>
+
+        <div class="col-md-4">
+            <h4 class="fw-bold">Want to join our team?</h4>
+            <p class="small text-muted">Check our Careers page for open roles and internship opportunities.</p>
+            <a href="#" class="btn btn-outline-primary btn-sm">View Careers</a>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,709 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.title }} - Astra Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Breadcrumb */
+    .breadcrumb-section {
+        background: #f8f9fa;
+        padding: 15px 0;
+        margin-bottom: 30px;
+    }
+
+    .breadcrumb {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .breadcrumb-item a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+
+    /* Product Layout */
+    .product-detail-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 60px;
+    }
+
+    /* Image Section */
+    .product-image-section {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+
+    .product-image-container {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-image-container:hover img {
+        transform: scale(1.05);
+    }
+
+    .product-image-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        z-index: 2;
+    }
+
+    /* Info Section */
+    .product-info-section h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #333;
+        line-height: 1.3;
+    }
+
+    .product-category-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.1rem;
+    }
+
+    .rating-count {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .price-section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .product-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+
+    .price-info {
+        display: flex;
+        gap: 20px;
+        font-size: 0.95rem;
+    }
+
+    .price-info span {
+        color: #666;
+    }
+
+    .price-info strong {
+        color: #333;
+    }
+
+    /* Description */
+    .product-description {
+        margin-bottom: 30px;
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.8;
+    }
+
+    /* Features */
+    .product-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .feature-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        display: flex;
+        gap: 10px;
+    }
+
+    .feature-icon {
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .feature-text {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    /* Action Buttons */
+    .product-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .btn-action {
+        padding: 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-primary-action {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-primary-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary-action {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .btn-secondary-action:hover {
+        background: #f8f9fa;
+        border-color: #764ba2;
+        color: #764ba2;
+    }
+
+    .btn-wishlist {
+        grid-column: 1;
+    }
+
+    /* Trust Badges */
+    .trust-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .trust-badge {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+
+    .trust-badge:last-child {
+        margin-bottom: 0;
+    }
+
+    .trust-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .trust-text strong {
+        color: #333;
+    }
+
+    .trust-text {
+        color: #666;
+    }
+
+    /* Related Products */
+    .related-section {
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .related-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    .related-products {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .related-product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .related-product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .related-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .related-info {
+        padding: 15px;
+    }
+
+    .related-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .related-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    /* Categories Section */
+    .categories-section {
+        margin-top: 60px;
+        padding: 40px 0;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .section-header {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    .categories-showcase {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 50px;
+    }
+
+    .category-showcase-card {
+        text-align: center;
+        padding: 25px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-showcase-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    }
+
+    .category-showcase-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .category-showcase-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .category-showcase-name {
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+    }
+
+    .category-showcase-count {
+        font-size: 0.8rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+        margin-top: 8px;
+    }
+
+    /* Featured Products Section */
+    .featured-section {
+        margin-bottom: 60px;
+    }
+
+    .featured-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 25px;
+    }
+
+    .featured-product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        position: relative;
+    }
+
+    .featured-product-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    }
+
+    .featured-product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        position: relative;
+    }
+
+    .featured-product-content {
+        padding: 18px;
+    }
+
+    .featured-product-category {
+        font-size: 0.8rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .featured-product-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .featured-product-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-wrapper {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .product-image-section {
+            position: static;
+            top: auto;
+        }
+
+        .product-info-section h1 {
+            font-size: 1.8rem;
+        }
+
+        .product-price {
+            font-size: 2rem;
+        }
+
+        .product-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-wishlist {
+            grid-column: 1;
+        }
+
+        .product-features {
+            grid-template-columns: 1fr;
+        }
+
+        .related-products {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-section">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'products' %}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></li>
+                <li class="breadcrumb-item active">{{ product.title }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container">
+    <div class="product-detail-wrapper">
+        <!-- Image Section -->
+        <div class="product-image-section">
+            <div class="product-image-container">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                {% else %}
+                    <img src="{% static 'images/product-placeholder.png' %}" alt="{{ product.title }}">
+                {% endif %}
+                <span class="product-image-badge">Premium</span>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="product-info-section">
+            <span class="product-category-badge">{{ product.category.name }}</span>
+            
+            <h1>{{ product.title }}</h1>
+
+            <div class="product-rating">
+                <div class="rating-stars">★★★★★</div>
+                <div class="rating-count">(128 reviews)</div>
+            </div>
+
+            <div class="price-section">
+                <div class="product-price">₹{{ product.price }}</div>
+                <div class="price-info">
+                    <div><span>Free Shipping</span> <strong>Orders above ₹999</strong></div>
+                </div>
+            </div>
+
+            <p class="product-description">{{ product.description }}</p>
+
+            <!-- Features -->
+            <div class="product-features">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text"><strong>Quality Assured</strong> Premium product</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text"><strong>In Stock</strong> Ready to ship</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text"><strong>Best Price</strong> Guaranteed</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text"><strong>Safe Payment</strong> 100% secure</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="product-actions">
+                {% if user.is_authenticated %}
+                    {% if in_cart %}
+                        <a href="{% url 'cart' %}" class="btn-action btn-primary-action">
+                            <i class="bi bi-check-circle"></i> In Cart
+                        </a>
+                    {% else %}
+                        <a href="{% url 'add_to_cart' product.slug %}" class="btn-action btn-primary-action">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </a>
+                    {% endif %}
+                    {% if in_wishlist %}
+                        <a href="{% url 'remove_from_wishlist' product.slug %}" class="btn-action btn-secondary-action btn-wishlist">
+                            <i class="bi bi-heart-fill"></i> Wishlisted
+                        </a>
+                    {% else %}
+                        <a href="{% url 'add_to_wishlist' product.slug %}" class="btn-action btn-secondary-action btn-wishlist">
+                            <i class="bi bi-heart"></i> Wishlist
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-action btn-primary-action">
+                        <i class="bi bi-cart-plus"></i> Login to Buy
+                    </a>
+                    <a href="{% url 'login' %}" class="btn-action btn-secondary-action btn-wishlist">
+                        <i class="bi bi-heart"></i> Login for Wishlist
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Trust Section -->
+            <div class="trust-section">
+                <div class="trust-badge">
+                    <div class="trust-icon">🚚</div>
+                    <div>
+                        <div class="trust-text"><strong>Free Delivery</strong> on prepaid orders</div>
+                    </div>
+                </div>
+                <div class="trust-badge">
+                    <div class="trust-icon">↩️</div>
+                    <div>
+                        <div class="trust-text"><strong>30-day Returns</strong> Easy return policy</div>
+                    </div>
+                </div>
+                <div class="trust-badge">
+                    <div class="trust-icon">🔒</div>
+                    <div>
+                        <div class="trust-text"><strong>Secure Payment</strong> SSL encrypted</div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'products' %}" style="display: inline-block; color: #667eea; text-decoration: none; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateX(-5px)'" onmouseout="this.style.transform='translateX(0)'">
+                <i class="bi bi-arrow-left"></i> Back to Products
+            </a>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+        <div class="related-section">
+            <h2 class="related-title">🛍️ You Might Also Like</h2>
+            <div class="related-products">
+                {% for related in related_products %}
+                    <a href="{% url 'product_detail' related.slug %}" class="related-product-card">
+                        {% if related.image %}
+                            <img src="{{ related.image.url }}" alt="{{ related.title }}" class="related-image">
+                        {% else %}
+                            <img src="{% static 'images/product-placeholder.png' %}" alt="{{ related.title }}" class="related-image">
+                        {% endif %}
+                        <div class="related-info">
+                            <div class="related-title">{{ related.title }}</div>
+                            <div class="related-price">₹{{ related.price }}</div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Categories Section -->
+    {% if all_categories %}
+        <div class="categories-section">
+            <h2 class="section-header">📂 Explore More Categories</h2>
+            <div class="categories-showcase">
+                {% for category in all_categories %}
+                    <a href="{% url 'products' %}?category={{ category.slug }}" class="category-showcase-card" style="background: linear-gradient(135deg, {% if forloop.counter == 1 %}#f093fb 0%, #f5576c{% elif forloop.counter == 2 %}#4facfe 0%, #00f2fe{% elif forloop.counter == 3 %}#43e97b 0%, #38f9d7{% elif forloop.counter == 4 %}#fa709a 0%, #fee140{% elif forloop.counter == 5 %}#30cfd0 0%, #330867{% else %}#a8edea 0%, #fed6e3{% endif %} 100%);">
+                        <div class="category-showcase-icon">
+                            {% if forloop.counter == 1 %}👕
+                            {% elif forloop.counter == 2 %}🏠
+                            {% elif forloop.counter == 3 %}⚡
+                            {% elif forloop.counter == 4 %}📚
+                            {% elif forloop.counter == 5 %}⚽
+                            {% elif forloop.counter == 6 %}💄
+                            {% else %}🛍️{% endif %}
+                        </div>
+                        <div class="category-showcase-name">{{ category.name }}</div>
+                        <div class="category-showcase-count">{{ category.products.count }} Products</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Featured Products Section -->
+    {% if featured_products %}
+        <div class="featured-section">
+            <h2 class="section-header">⭐ Featured Products</h2>
+            <div class="featured-grid">
+                {% for product in featured_products %}
+                    <a href="{% url 'product_detail' product.slug %}" class="featured-product-card">
+                        <div style="position: relative;">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.title }}" class="featured-product-image">
+                            {% else %}
+                                <img src="{% static 'images/product-placeholder.png' %}" alt="{{ product.title }}" class="featured-product-image">
+                            {% endif %}
+                            <span class="featured-badge">New</span>
+                        </div>
+                        <div class="featured-product-content">
+                            <span class="featured-product-category">{{ product.category.name }}</span>
+                            <h3 class="featured-product-title">{{ product.title }}</h3>
+                            <div class="featured-product-price">₹{{ product.price }}</div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

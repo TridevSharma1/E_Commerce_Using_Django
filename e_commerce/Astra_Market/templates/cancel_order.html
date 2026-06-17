@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cancel Order - Astra Market{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+        min-height: 100vh;
+    }
+
+    .cancel-container {
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .cancel-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .cancel-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .cancel-header p {
+        font-size: 1.05rem;
+        color: #666;
+    }
+
+    .cancel-card {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .warning-box {
+        background: linear-gradient(135deg, #ffe8e8 0%, #ffd1d1 100%);
+        border-left: 4px solid #ff6b6b;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+
+    .warning-box-title {
+        font-weight: 700;
+        color: #c92a2a;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .warning-box-text {
+        color: #a61e4d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .order-details {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .order-detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 0.95rem;
+    }
+
+    .order-detail-row strong {
+        color: #333;
+    }
+
+    .order-detail-row span {
+        color: #666;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+
+    .reason-options {
+        display: grid;
+        gap: 12px;
+    }
+
+    .reason-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .reason-option:hover {
+        border-color: #ff6b6b;
+        background: #fff9f9;
+    }
+
+    .reason-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        margin-top: 2px;
+        cursor: pointer;
+        accent-color: #ff6b6b;
+        flex-shrink: 0;
+    }
+
+    .reason-option-content {
+        flex-grow: 1;
+    }
+
+    .reason-option-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2px;
+    }
+
+    .reason-option-desc {
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    .reason-option input[type="radio"]:checked + .reason-option-content .reason-option-title {
+        color: #ff6b6b;
+    }
+
+    .message-box {
+        display: none;
+        margin-top: 20px;
+    }
+
+    .message-box.active {
+        display: block;
+    }
+
+    .message-box textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 120px;
+        transition: all 0.3s ease;
+    }
+
+    .message-box textarea:focus {
+        outline: none;
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    .message-requirement {
+        font-size: 0.85rem;
+        color: #999;
+        margin-top: 8px;
+        font-style: italic;
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 14px 24px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-back {
+        background: #f0f0f0;
+        color: #ff6b6b;
+        border: 2px solid #ff6b6b;
+    }
+
+    .btn-back:hover {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .cancellation-note {
+        background: linear-gradient(135deg, #e8f5ff 0%, #f0e8ff 100%);
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #555;
+        border-left: 4px solid #667eea;
+        margin-bottom: 30px;
+    }
+
+    .cancellation-note strong {
+        color: #667eea;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .cancel-card {
+            padding: 25px;
+        }
+
+        .cancel-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .reason-option {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="cancel-container">
+    <div class="cancel-header">
+        <h1>⚠️ Cancel Order</h1>
+        <p>We'd love to know why you're cancelling</p>
+    </div>
+
+    <div class="cancel-card">
+        <div class="warning-box">
+            <div class="warning-box-title">
+                ⚠️ Before You Cancel
+            </div>
+            <div class="warning-box-text">
+                Once you cancel this order, you cannot undo this action. Your refund will be processed to your original payment method within 5-7 business days.
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-details">
+            <div class="order-detail-row">
+                <strong>Order ID:</strong>
+                <span>#{{ order.id }}</span>
+            </div>
+            <div class="order-detail-row">
+                <strong>Order Total:</strong>
+                <span>₹{{ order.total_price }}</span>
+            </div>
+            <div class="order-detail-row">
+                <strong>Order Date:</strong>
+                <span>{{ order.created_at|date:"d M Y" }}</span>
+            </div>
+            <div class="order-detail-row">
+                <strong>Current Status:</strong>
+                <span style="color: #ff9800; font-weight: 600;">{{ order.get_status_display|upper }}</span>
+            </div>
+        </div>
+
+        <!-- Cancellation Form -->
+        <form method="POST" action="{% url 'confirm_cancel_order' order.id %}" id="cancelForm">
+            {% csrf_token %}
+
+            <div class="cancellation-note">
+                💡 <strong>Your feedback helps us improve!</strong> Please tell us why you're cancelling so we can serve you better.
+            </div>
+
+            <!-- Cancellation Reason Selection -->
+            <div class="form-section">
+                <h2 class="section-title">📝 Why are you cancelling?</h2>
+                
+                <div class="reason-options">
+                    {% for reason_code, reason_label in cancellation_reasons %}
+                        <label class="reason-option">
+                            <input type="radio" name="cancellation_reason" value="{{ reason_code }}" onchange="updateMessageBox(this)">
+                            <div class="reason-option-content">
+                                <div class="reason-option-title">{{ reason_label }}</div>
+                                <div class="reason-option-desc">Help us understand your concerns</div>
+                            </div>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Additional Message (for "other" reason) -->
+            <div class="message-box" id="messageBox">
+                <div class="form-section">
+                    <h2 class="section-title">✍️ Please explain further</h2>
+                    <textarea 
+                        name="cancellation_message" 
+                        placeholder="Tell us more about why you're cancelling this order (minimum 10 characters)..."
+                        id="messageTextarea"
+                    ></textarea>
+                    <div class="message-requirement">This field is required for the selected reason</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="{% url 'orders' %}" class="btn btn-back">
+                    ← Keep Order
+                </a>
+                <button type="submit" class="btn btn-cancel" id="confirmBtn" disabled>
+                    🗑️ Cancel Order
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateMessageBox(radio) {
+        const messageBox = document.getElementById('messageBox');
+        const textarea = document.getElementById('messageTextarea');
+        const confirmBtn = document.getElementById('confirmBtn');
+        
+        // Show message box if "other" is selected
+        if (radio.value === 'other') {
+            messageBox.classList.add('active');
+            textarea.required = true;
+        } else {
+            messageBox.classList.remove('active');
+            textarea.required = false;
+            textarea.value = '';
+        }
+        
+        // Enable submit button when a reason is selected
+        confirmBtn.disabled = false;
+    }
+
+    // Form submission validation
+    document.getElementById('cancelForm').addEventListener('submit', function(e) {
+        const selectedReason = document.querySelector('input[name="cancellation_reason"]:checked');
+        const messageTextarea = document.getElementById('messageTextarea');
+        
+        if (!selectedReason) {
+            e.preventDefault();
+            alert('Please select a cancellation reason');
+            return false;
+        }
+        
+        if (selectedReason.value === 'other' && messageTextarea.value.trim().length < 10) {
+            e.preventDefault();
+            alert('Please provide at least 10 characters explaining your reason');
+            return false;
+        }
+        
+        // Show confirmation
+        if (!confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Initially disable submit button
+    document.getElementById('confirmBtn').disabled = true;
+</script>
+{% endblock %}

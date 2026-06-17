@@ -1,0 +1,529 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products - Astra Market{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Header Section */
+    .products-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 50px 0;
+        margin-bottom: 40px;
+    }
+
+    .products-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .products-header p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+    }
+
+    /* Search Bar */
+    .search-section {
+        margin-bottom: 30px;
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-wrapper input {
+        padding: 12px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 50px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-wrapper button {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper button:hover {
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        position: sticky;
+        top: 100px;
+    }
+
+    .sidebar-card h5 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .category-list-item {
+        display: block;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #555;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .category-list-item:hover {
+        background-color: #f5f7fa;
+        color: #667eea;
+        border-left-color: #667eea;
+        padding-left: 20px;
+    }
+
+    .category-list-item.active {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        color: #667eea;
+        border-left-color: #667eea;
+        font-weight: 600;
+    }
+
+    .category-badge {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        float: right;
+    }
+
+    /* Product Grid */
+    .products-grid {
+        margin-bottom: 60px;
+    }
+
+    .product-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 250px;
+        background: #f5f7fa;
+    }
+
+    .product-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .product-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        min-height: 30px;
+    }
+
+    .product-category {
+        font-size: 0.85rem;
+        color: #999;
+        margin-bottom: 12px;
+    }
+
+    .product-price {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 15px;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .product-actions a {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-details {
+        background: #f5f7fa;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .btn-details:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-cart {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+    }
+
+    .btn-cart:hover {
+        background: linear-gradient(135deg, #764ba2, #667eea);
+        transform: translateY(-2px);
+    }
+
+    /* No Products */
+    .no-products {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .no-products-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    /* Reviews Section */
+    .reviews-section {
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .reviews-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .reviews-title h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .review-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .review-card:hover {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .review-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .review-meta {
+        flex: 1;
+    }
+
+    .review-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 3px;
+    }
+
+    .review-rating {
+        color: #ffc107;
+        font-size: 0.9rem;
+    }
+
+    .review-comment {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+
+    .review-date {
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    /* Empty State */
+    .empty-reviews {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+
+    /* Result Info */
+    .result-info {
+        font-size: 0.95rem;
+        color: #666;
+    }
+
+    .result-info strong {
+        color: #333;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header Section -->
+<div class="products-header">
+    <div class="container">
+        <h1>Our Products</h1>
+        <p>Discover our wide range of premium products</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Search Section -->
+    <div class="search-section">
+        <form method="get" action="{% url 'products' %}" class="search-wrapper">
+            <input type="search" name="q" placeholder="Search products..." value="{{ query }}" autocomplete="off">
+            <button type="submit"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+
+    <!-- Result Info -->
+    {% if query or selected_category %}
+        <div class="result-info mb-4">
+            {% if selected_category %}
+                📁 Showing products in <strong>{{ selected_category_name }}</strong>
+            {% endif %}
+            {% if query %}
+                🔍 Search results for <strong>"{{ query }}"</strong>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="sidebar-card">
+                <h5><i class="bi bi-funnel"></i> Categories</h5>
+                <a href="{% url 'products' %}" class="category-list-item {% if not selected_category %}active{% endif %}">
+                    All Categories
+                    <span class="category-badge">{{ products|length }}</span>
+                </a>
+                {% for category in categories %}
+                    <a href="{% url 'products' %}?category={{ category.slug }}" class="category-list-item {% if selected_category == category.slug %}active{% endif %}">
+                        {{ category.name }}
+                        <span class="category-badge">{{ category.products.count }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            {% if products %}
+                <div class="products-grid">
+                    <div class="row g-4">
+                        {% for product in products %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="product-card">
+                                    <div class="product-image-wrapper">
+                                        {% if product.image %}
+                                            <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                                        {% else %}
+                                            <img src="{% static 'images/product-placeholder.png' %}" alt="Product">
+                                        {% endif %}
+                                        <span class="product-badge">New</span>
+                                    </div>
+                                    <div class="product-body">
+                                        <h5 class="product-title">{{ product.title }}</h5>
+                                        <p class="product-category">{{ product.category.name }}</p>
+                                        <div class="product-price">₹{{ product.price }}</div>
+                                        <div class="product-actions">
+                                            <a href="{% url 'product_detail' product.slug %}" class="btn-details">View Details</a>
+                                            {% if user.is_authenticated %}
+                                                <a href="{% url 'add_to_cart' product.slug %}" class="btn-cart">Add to Cart</a>
+                                            {% else %}
+                                                <a href="{% url 'login' %}" class="btn-cart">Login to Buy</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-products">
+                    <div class="no-products-icon">🔍</div>
+                    <h4>No products found</h4>
+                    <p class="text-muted">Try a different search or browse other categories</p>
+                    <a href="{% url 'products' %}" class="btn btn-primary mt-3">Browse All Products</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+        <div class="reviews-header">
+            <div class="reviews-title">
+                <h3>⭐ Customer Reviews</h3>
+                <p class="text-muted">See what our customers think</p>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                <i class="bi bi-pencil"></i> Leave Feedback
+            </button>
+        </div>
+
+        {% if feedbacks %}
+            <div class="row g-4">
+                {% for fb in feedbacks %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="review-card">
+                            <div class="review-header">
+                                {% if fb.profile_image %}
+                                    <img src="{{ fb.profile_image.url }}" alt="{{ fb.full_name }}" class="review-avatar">
+                                {% else %}
+                                    <div class="review-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.5rem;">
+                                        {{ fb.full_name|slice:":1"|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="review-meta">
+                                    <div class="review-name">{{ fb.full_name }}</div>
+                                    <div class="review-rating">
+                                        {% for i in "12345"|slice:":fb.rating" %}★{% endfor %}{% for i in "12345"|slice:"fb.rating:" %}☆{% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="review-comment">{{ fb.comment }}</p>
+                            <div class="review-date">{{ fb.created_at|date:"d M Y" }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-reviews">
+                <p>No reviews yet. Be the first to leave feedback!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title" id="feedbackModalLabel">Submit Your Feedback</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{% url 'submit_feedback' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label fw-600">Full Name</label>
+                <input type="text" name="full_name" class="form-control" placeholder="Your name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-600">Profile Image (optional)</label>
+                <input type="file" name="profile_image" class="form-control" accept="image/*">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-600">Rating</label>
+                <select name="rating" class="form-select" required>
+                    <option value="">Select rating...</option>
+                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                    <option value="4">⭐⭐⭐⭐ Very Good</option>
+                    <option value="3">⭐⭐⭐ Good</option>
+                    <option value="2">⭐⭐ Fair</option>
+                    <option value="1">⭐ Poor</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-600">Your Feedback (max 500 words)</label>
+                <textarea name="comment" class="form-control" rows="5" placeholder="Share your thoughts..." required></textarea>
+                <small class="form-text text-muted">Character limit: 500 words</small>
+            </div>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

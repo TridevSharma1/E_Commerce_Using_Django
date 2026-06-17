@@ -1,0 +1,531 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders - Astra Market{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .orders-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .orders-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .orders-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .orders-header p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    .empty-orders {
+        background: white;
+        border-radius: 16px;
+        padding: 80px 40px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.8;
+    }
+
+    .empty-orders h2 {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .empty-orders p {
+        color: #999;
+        font-size: 1.05rem;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .shop-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 14px 40px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .shop-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .orders-list {
+        display: grid;
+        gap: 20px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+    }
+
+    .order-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .order-header:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #6a3a8f 100%);
+    }
+
+    .order-header-left {
+        flex-grow: 1;
+    }
+
+    .order-id {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .order-date {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .order-header-right {
+        text-align: right;
+    }
+
+    .order-total {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .order-body {
+        padding: 25px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .order-body.show {
+        max-height: 1000px;
+    }
+
+    .order-items {
+        margin-bottom: 25px;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 15px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+
+    .order-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .order-item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .order-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .order-item-info {
+        flex-grow: 1;
+    }
+
+    .order-item-name {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .order-item-detail {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 3px;
+    }
+
+    .order-item-price {
+        font-weight: 700;
+        color: #667eea;
+        font-size: 1.05rem;
+    }
+
+    .order-summary {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 0.95rem;
+    }
+
+    .summary-row strong {
+        color: #333;
+    }
+
+    .summary-row.total {
+        border-top: 2px solid #e0e0e0;
+        padding-top: 12px;
+        margin-top: 12px;
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    .summary-row.total strong {
+        color: #667eea;
+    }
+
+    .order-address {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 3px solid #667eea;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #666;
+    }
+
+    .address-label {
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-cancel-order {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);
+        color: white;
+    }
+
+    .btn-cancel-order:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-track {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-track:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .cancellation-info {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: #721c24;
+        font-size: 0.9rem;
+    }
+
+    .cancellation-reason {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .cancellation-message {
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+
+    .toggle-icon {
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .order-card.expanded .toggle-icon {
+        transform: rotate(180deg);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .orders-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .order-header-right {
+            text-align: left;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .order-item {
+            flex-direction: column;
+        }
+
+        .order-item-image {
+            width: 100%;
+            height: 150px;
+        }
+
+        .order-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="orders-container">
+    <div class="orders-header">
+        <h1>📦 My Orders</h1>
+        <p>Track and manage your orders</p>
+    </div>
+
+    {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+                <div class="order-card" id="order-{{ order.id }}">
+                    <div class="order-header" onclick="toggleOrder(event, {{ order.id }})">
+                        <div class="order-header-left">
+                            <div class="order-id">Order #{{ order.id }}</div>
+                            <div class="order-date">📅 {{ order.created_at|date:"d M Y, H:i" }}</div>
+                        </div>
+                        <div class="order-header-right">
+                            <div class="order-total">₹{{ order.total_price }}</div>
+                            <span class="order-status status-{{ order.status }}">
+                                {% if order.status == 'pending' %}
+                                    ⏳ Pending
+                                {% elif order.status == 'completed' %}
+                                    ✅ Completed
+                                {% elif order.status == 'cancelled' %}
+                                    ❌ Cancelled
+                                {% endif %}
+                            </span>
+                            <div class="toggle-icon">▼</div>
+                        </div>
+                    </div>
+
+                    <div class="order-body">
+                        <!-- Cancellation Info (if cancelled) -->
+                        {% if order.status == 'cancelled' %}
+                            <div class="cancellation-info">
+                                <div class="cancellation-reason">
+                                    📌 Cancellation Reason: {{ order.get_cancellation_reason_display }}
+                                </div>
+                                {% if order.cancellation_message %}
+                                    <div class="cancellation-message">
+                                        {{ order.cancellation_message }}
+                                    </div>
+                                {% endif %}
+                                <div style="margin-top: 8px; font-size: 0.85rem;">
+                                    Cancelled on: {{ order.cancelled_at|date:"d M Y, H:i" }}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Order Items -->
+                        <div class="order-items">
+                            <div style="font-weight: 700; margin-bottom: 12px; color: #333;">📦 Order Items</div>
+                            {% for item in order.items.all %}
+                                <div class="order-item">
+                                    <div class="order-item-image">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}">
+                                        {% else %}
+                                            <img src="{% static 'images/product-placeholder.png' %}" alt="{{ item.product.title }}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="order-item-info">
+                                        <div class="order-item-name">{{ item.product.title }}</div>
+                                        <div class="order-item-detail">Category: {{ item.product.category.name }}</div>
+                                        <div class="order-item-detail">Quantity: {{ item.quantity }}</div>
+                                        <div class="order-item-detail">Unit Price: ₹{{ item.price }}</div>
+                                        <div class="order-item-price">Total: ₹{{ item.total_price }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <strong>Subtotal</strong>
+                                <strong>₹{{ order.total_price }}</strong>
+                            </div>
+                            <div class="summary-row">
+                                <strong>Shipping</strong>
+                                <strong style="color: #27ae60;">Free</strong>
+                            </div>
+                            <div class="summary-row total">
+                                <strong>Total Amount</strong>
+                                <strong>₹{{ order.total_price }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        {% if order.shipping_address %}
+                            <div class="order-address">
+                                <div class="address-label">📍 Delivery Address</div>
+                                <strong>{{ order.shipping_name }}</strong><br>
+                                {{ order.shipping_address }}<br>
+                                📱 {{ order.shipping_phone }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Order Actions -->
+                        {% if order.status == 'pending' %}
+                            <div class="order-actions">
+                                <a href="{% url 'cancel_order' order.id %}" class="action-btn btn-cancel-order">
+                                    ❌ Cancel Order
+                                </a>
+                            </div>
+                        {% elif order.status == 'completed' %}
+                            <div style="background: #d4edda; padding: 15px; border-radius: 8px; text-align: center; color: #155724; font-weight: 600;">
+                                ✅ Order Completed on {{ order.updated_at|date:"d M Y" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-orders">
+            <div class="empty-icon">📦</div>
+            <h2>No Orders Yet</h2>
+            <p>You haven't placed any orders yet. Start shopping and discover amazing products!</p>
+            <a href="{% url 'products' %}" class="shop-btn">🛍️ Shop Now</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function toggleOrder(event, orderId) {
+        const card = document.getElementById('order-' + orderId);
+        const body = card.querySelector('.order-body');
+        
+        card.classList.toggle('expanded');
+        body.classList.toggle('show');
+    }
+</script>
+{% endblock %}
