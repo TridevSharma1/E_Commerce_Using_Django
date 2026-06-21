@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
 from decimal import Decimal
 from datetime import datetime
@@ -39,6 +40,10 @@ def register(request):
         
         if len(password) < 8:
             messages.error(request, 'Password must be at least 8 characters long.')
+            return redirect('register')
+
+        if request.POST.get('accept_terms') != 'on':
+            messages.error(request, 'You must agree to the Terms & Conditions to create an account.')
             return redirect('register')
         
         if CustomUser.objects.filter(email=email).exists():
@@ -103,9 +108,45 @@ def user_logout(request):
 def profile(request):
     """
     User profile view.
-    Displays the logged-in user's profile information.
+    Displays and updates the logged-in user's profile information.
     """
     user = request.user
+
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        alternate_mobile = request.POST.get('alternate_mobile', '').strip()
+        dob = request.POST.get('dob', '').strip()
+        gender = request.POST.get('gender', '').strip()
+        address = request.POST.get('address', '').strip()
+        profile_image = request.FILES.get('profile_image')
+
+        if not full_name or not mobile:
+            messages.error(request, 'Full name and primary mobile number are required.')
+            return redirect('profile')
+
+        user.full_name = full_name
+        user.mobile = mobile
+        user.alternate_mobile = alternate_mobile or None
+        user.dob = dob or None
+        user.gender = gender or ''
+        user.address = address or ''
+
+        if profile_image:
+            user.profile_image = profile_image
+
+        try:
+            user.full_clean()
+            user.save()
+            messages.success(request, 'Your profile has been updated successfully.')
+        except ValidationError as e:
+            messages.error(request, 'Please correct the profile information.')
+            for field_errors in e.message_dict.values():
+                for error in field_errors:
+                    messages.error(request, error)
+
+        return redirect('profile')
+
     return render(request, 'profile.html', {'user': user})
 
 
@@ -114,6 +155,13 @@ def about(request):
     About page.
     """
     return render(request, 'about.html')
+
+
+def terms(request):
+    """
+    Terms & conditions page.
+    """
+    return render(request, 'terms.html')
 
 
 def products(request):
@@ -310,6 +358,11 @@ def confirm_checkout(request):
         if not cart_items:
             messages.warning(request, 'Your cart is empty.')
             return redirect('cart')
+
+        # Ensure terms are accepted
+        if request.POST.get('accept_terms') != 'on':
+            messages.error(request, 'Please accept the Terms & Conditions before placing your order.')
+            return redirect('checkout')
 
         # Get address information
         shipping_name = request.POST.get('shipping_name', request.user.full_name)
