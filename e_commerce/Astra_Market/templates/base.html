@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Astra Market{% endblock %}</title>
@@ -9,128 +10,530 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #f8f9fa;
         }
-        .navbar {
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+        /* Navbar Styling */
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .btn-primary {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+
+        .navbar-custom .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-            border-color: #0b5ed7;
+
+        /* Brand Logo */
+        .navbar-brand-custom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            font-weight: 700;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
+
+        .navbar-brand-custom:hover {
+            color: #667eea;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Navigation Menu */
+        .navbar-menu {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .navbar-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #667eea;
+        }
+
+        .navbar-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-menu a:hover::after {
+            width: 100%;
+        }
+
+        /* Search Bar */
+        .search-wrapper {
+            flex: 1;
+            max-width: 350px;
+            position: relative;
+        }
+
+        .search-wrapper form {
+            display: flex;
+            gap: 0;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px 0 0 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .search-btn:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Action Icons */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .action-icon {
+            position: relative;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .action-icon:hover {
+            color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 50%;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        /* User Dropdown */
+        .user-profile {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .user-avatar:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transform: scale(1.05);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+            min-width: 220px;
+            margin-top: 10px;
+            border: none;
+            display: none;
+            z-index: 1001;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+        }
+
+        .dropdown-menu-custom a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-menu-custom a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu-custom a:hover {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .dropdown-menu-custom a i {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #667eea;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-login:hover {
+            color: #764ba2;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            color: #667eea;
+        }
+
+        /* Messages Styling */
         main {
-            min-height: calc(100vh - 56px);
+            min-height: calc(100vh - 200px);
         }
+
         .site-footer {
             background-color: #0b1220;
             color: rgba(255,255,255,0.9);
         }
+
         .site-footer a {
             color: rgba(255,255,255,0.85);
             text-decoration: none;
+            transition: color 0.3s ease;
         }
-        .site-footer a:hover { text-decoration: underline; }
-        .footer-logo { font-size: 1.25rem; }
-        .nav-link { color: rgba(0,0,0,0.8); }
+
+        .site-footer a:hover {
+            color: white;
+        }
+
+        .footer-logo {
+            font-size: 1.25rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .navbar-menu {
+                display: none;
+            }
+
+            .search-wrapper {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar-custom .container {
+                gap: 10px;
+            }
+
+            .navbar-actions {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand-custom {
+                font-size: 1.1rem;
+            }
+
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .navbar-actions {
+                gap: 12px;
+            }
+
+            .action-icon {
+                font-size: 1.1rem;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .btn-register {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Alert Messages */
+        .alert-wrapper {
+            padding: 15px 0;
+        }
+
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    {% block top_banner %}{% endblock %}
+    <!-- Enhanced Navbar -->
+    <nav class="navbar-custom">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:40px;height:40px;">AM</div>
-                <span class="ms-2 fw-bold">Astra Market</span>
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="navbar-brand-custom">
+                <div class="logo-icon">
+                    <img src="{% static 'images/ChatGPT Image Jun 21, 2026, 04_16_52 PM.png' %}" alt="Astra Market logo">
+                </div>
+                <span>Astra Market</span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- Navigation Menu (Desktop) -->
+            <div class="navbar-menu d-none d-lg-flex">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'products' %}">Products</a>
+                <a href="{% url 'category' %}">Categories</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </div>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'about' %}">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'products' %}">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'category' %}">Category</a>
-                    </li>
-                    <li class="nav-item d-none d-lg-block">
-                        <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-                    </li>
-                </ul>
-
-                <form class="d-none d-lg-flex mx-3" role="search" action="{% url 'products' %}" method="get">
-                    <input class="form-control form-control-sm me-2" type="search" placeholder="Search products" aria-label="Search" name="q">
-                    <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="bi bi-search"></i></button>
+            <!-- Search Bar (Desktop) -->
+            <div class="search-wrapper d-none d-lg-block">
+                <form action="{% url 'products' %}" method="get">
+                    <input
+                        type="text"
+                        class="search-input"
+                        name="q"
+                        placeholder="Search products..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-btn">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </form>
+            </div>
 
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item me-3">
-                        <a class="nav-link position-relative" href="{% url 'wishlist' %}" title="Wishlist">
-                            <i class="bi bi-heart fs-5"></i>
-                            {% if user.is_authenticated and user.wishlist_items.count %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ user.wishlist_items.count }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item me-3">
-                        <a class="nav-link position-relative" href="{% url 'cart' %}" title="Cart">
-                            <i class="bi bi-cart3 fs-5"></i>
-                            {% if user.is_authenticated and user.cart_items.count %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ user.cart_items.count }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width:34px;height:34px;">{{ user.full_name|slice:":1"|upper }}</div>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'orders' %}"><i class="bi bi-bag me-2"></i>My Orders</a></li>
-                                <li><a class="dropdown-item" href="{% url 'support' %}"><i class="bi bi-life-preserver me-2"></i>Support</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary ms-2" href="{% url 'register' %}">Register</a>
-                        </li>
+            <!-- Action Icons & Auth -->
+            <div class="navbar-actions">
+                <!-- Wishlist -->
+                <a href="{% url 'wishlist' %}" class="action-icon" title="Wishlist">
+                    <i class="bi bi-heart"></i>
+                    {% if user.is_authenticated and user.wishlist_items.count %}
+                        <span class="badge-count">{{ user.wishlist_items.count }}</span>
                     {% endif %}
-                </ul>
+                </a>
+
+                <!-- Cart -->
+                <a href="{% url 'cart' %}" class="action-icon" title="Shopping Cart">
+                    <i class="bi bi-bag"></i>
+                    {% if user.is_authenticated and user.cart_items.count %}
+                        <span class="badge-count">{{ user.cart_items.count }}</span>
+                    {% endif %}
+                </a>
+
+                <!-- User Profile / Auth -->
+                {% if user.is_authenticated %}
+                    <div class="user-profile">
+                        <div class="user-avatar" onclick="toggleDropdown()" title="{{ user.full_name }}">
+                            {{ user.full_name|slice:":1"|upper }}
+                        </div>
+                        <div class="dropdown-menu-custom" id="userDropdown">
+                            <a href="{% url 'profile' %}"><i class="bi bi-person"></i> My Profile</a>
+                            <a href="{% url 'orders' %}"><i class="bi bi-bag-check"></i> My Orders</a>
+                            <a href="{% url 'support' %}"><i class="bi bi-question-circle"></i> Support</a>
+                            <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="auth-buttons">
+                        <a href="{% url 'login' %}" class="btn-login">Sign In</a>
+                        <a href="{% url 'register' %}" class="btn-register">Register</a>
+                    </div>
+                {% endif %}
+
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="bi bi-list"></i>
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- Messages -->
-    <div class="container mt-3">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
+    {% if messages %}
+        <div class="alert-wrapper">
+            <div class="container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-custom alert-dismissible fade show" role="alert">
+                        <strong>
+                            {% if message.tags == 'success' %}
+                                ✓ Success
+                            {% elif message.tags == 'error' %}
+                                ✕ Error
+                            {% elif message.tags == 'warning' %}
+                                ⚠ Warning
+                            {% elif message.tags == 'info' %}
+                                ℹ Info
+                            {% endif %}
+                        </strong>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
     <!-- Main Content -->
     <main class="container my-5">
@@ -143,7 +546,9 @@
             <div class="row gy-4">
                 <div class="col-md-4">
                     <div class="footer-logo mb-2 d-flex align-items-center">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width:44px;height:44px;">AM</div>
+                        <div style="width:44px;height:44px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(102, 126, 234, 0.3);">
+                            <img src="{% static 'images/ChatGPT Image Jun 21, 2026, 04_16_52 PM.png' %}" alt="Astra Market logo" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
                         <div class="ms-3">
                             <strong>Astra Market</strong>
                             <div class="small text-muted">Quality products, delivered fast.</div>
@@ -170,6 +575,7 @@
                         <li><a href="{% url 'contact' %}">Contact</a></li>
                         <li><a href="#">Privacy Policy</a></li>
                         <li><a href="#">Refund Policy</a></li>
+                        <li><a href="{% url 'terms' %}">Terms & Conditions</a></li>
                         <li><a href="{% url 'support' %}">Help Center</a></li>
                     </ul>
                 </div>
@@ -183,7 +589,7 @@
                         <a href="#" class="me-3"><i class="bi bi-instagram fs-4"></i></a>
                         <a href="#"><i class="bi bi-linkedin fs-4"></i></a>
                     </p>
-                    <p class="small mt-3">Map: <a href="https://www.google.com/maps" target="_blank">View on Google Maps</a></p>
+                    <p class="small mt-3">Map: <a href="https://www.google.com/maps/place/28%C2%B043'59.6%22N+77%C2%B016'14.7%22E/@28.733212,77.2681861,17z/data=!3m1!4b1!4m4!3m3!8m2!3d28.733212!4d77.270761?entry=ttu&g_ep=EgoyMDI2MDYxNi4wIKXMDSoASAFQAw%3D%3D" target="_blank">View on Google Maps</a></p>
                 </div>
             </div>
 
@@ -195,6 +601,31 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Navbar Scripts -->
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userProfile = event.target.closest('.user-profile');
+            if (!userProfile && dropdown) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function toggleMobileMenu() {
+            const menu = document.querySelector('.navbar-menu');
+            const search = document.querySelector('.search-wrapper');
+            if (menu) menu.classList.toggle('d-lg-flex');
+            if (search) search.classList.toggle('d-lg-block');
+        }
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

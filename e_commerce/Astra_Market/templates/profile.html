@@ -2,119 +2,418 @@
 
 {% block title %}Profile - Astra Market{% endblock %}
 
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 0;
+        margin-bottom: 40px;
+    }
+
+    .profile-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .profile-container {
+        max-width: 900px;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .profile-input,
+    .profile-select,
+    .profile-textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 1rem;
+        color: #333;
+        background: #fff;
+    }
+
+    .profile-input:focus,
+    .profile-select:focus,
+    .profile-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+    }
+
+    .profile-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .profile-avatar-section {
+        text-align: center;
+        padding: 40px 20px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        margin: 0 auto 15px;
+    }
+
+    .avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        margin: 0 auto 15px;
+        border: 4px solid white;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-avatar-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .profile-avatar-status {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .profile-content {
+        padding: 40px;
+    }
+
+    .info-section {
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-size: 1.05rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .info-value a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .info-value a:hover {
+        color: #764ba2;
+    }
+
+    .info-grid.full {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 40px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn-action {
+        padding: 14px 32px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .btn-logout {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);
+        color: white;
+    }
+
+    .btn-logout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-home {
+        background: #f0f0f0;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .btn-home:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .stat-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 2px solid #e0e0e0;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            padding: 40px 0;
+        }
+
+        .profile-content {
+            padding: 25px;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-action {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-lg">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">My Profile</h3>
-            </div>
-            <div class="card-body p-5">
-                <!-- Profile Picture -->
-                <div class="text-center mb-4">
-                    {% if user.profile_image %}
-                        <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="rounded-circle" width="150" height="150" style="object-fit: cover;">
-                    {% else %}
-                        <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
-                            <span class="text-white fs-1">👤</span>
-                        </div>
-                    {% endif %}
+
+<!-- Header -->
+<div class="profile-header">
+    <div class="container">
+        <h1>👤 My Profile</h1>
+        <p class="text-muted">Manage your account information and settings</p>
+    </div>
+</div>
+
+<div class="container profile-container">
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Avatar Section -->
+            <div class="profile-avatar-section">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="profile-avatar">
+                {% else %}
+                    <div class="avatar-placeholder">👤</div>
+                {% endif %}
+                <div class="profile-avatar-name">{{ user.full_name }}</div>
+                <span class="profile-avatar-status">
+                    {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+
+                <div style="margin-top: 22px; text-align: left; width:100%; max-width:360px; margin-left:auto; margin-right:auto;">
+                    <label for="profile_image" style="font-weight:700; display:block; color:#333; margin-bottom:8px;">Upload profile photo</label>
+                    <input type="file" id="profile_image" name="profile_image" accept="image/*" class="profile-input">
                 </div>
+            </div>
 
-                <!-- Profile Information -->
-                <div class="row">
-                    <!-- Full Name -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Full Name</label>
-                        <p class="form-control-plaintext border-bottom pb-2">{{ user.full_name }}</p>
+            <!-- Content Section -->
+            <div class="profile-content">
+            <!-- Personal Information -->
+            <div class="info-section">
+                <h2 class="section-title">📋 Personal Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Full Name</span>
+                        <input type="text" name="full_name" value="{{ user.full_name }}" class="profile-input" required>
                     </div>
-
-                    <!-- Email -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Email Address</label>
-                        <p class="form-control-plaintext border-bottom pb-2">{{ user.email }}</p>
+                    <div class="info-item">
+                        <span class="info-label">Email Address</span>
+                        <span class="info-value"><a href="mailto:{{ user.email }}">{{ user.email }}</a></span>
                     </div>
-
-                    <!-- Mobile -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Mobile Number</label>
-                        <p class="form-control-plaintext border-bottom pb-2">{{ user.mobile|default:"Not provided" }}</p>
+                    <div class="info-item">
+                        <span class="info-label">Mobile Number</span>
+                        <input type="tel" name="mobile" value="{{ user.mobile }}" class="profile-input" required>
                     </div>
-
-                    <!-- Alternate Mobile -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Alternate Mobile</label>
-                        <p class="form-control-plaintext border-bottom pb-2">{{ user.alternate_mobile|default:"Not provided" }}</p>
+                    <div class="info-item">
+                        <span class="info-label">Alternate Mobile</span>
+                        <input type="tel" name="alternate_mobile" value="{{ user.alternate_mobile }}" class="profile-input" placeholder="Optional">
                     </div>
+                </div>
+            </div>
 
-                    <!-- Date of Birth -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Date of Birth</label>
-                        <p class="form-control-plaintext border-bottom pb-2">
-                            {% if user.dob %}
-                                {{ user.dob|date:"d/m/Y" }}
-                            {% else %}
-                                Not provided
-                            {% endif %}
-                        </p>
+            <!-- Additional Information -->
+            <div class="info-section">
+                <h2 class="section-title">ℹ️ Additional Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Date of Birth</span>
+                        <input type="date" name="dob" value="{{ user.dob|date:'Y-m-d' }}" class="profile-input">
                     </div>
-
-                    <!-- Gender -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Gender</label>
-                        <p class="form-control-plaintext border-bottom pb-2">
-                            {% if user.gender %}
-                                {{ user.get_gender_display|default:user.gender }}
-                            {% else %}
-                                Not provided
-                            {% endif %}
-                        </p>
+                    <div class="info-item">
+                        <span class="info-label">Gender</span>
+                        <select name="gender" class="profile-select">
+                            <option value="" {% if not user.gender %}selected{% endif %}>Select gender</option>
+                            <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                            <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                            <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+                        </select>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Address -->
-                    <div class="col-12 mb-4">
-                        <label class="form-label fw-bold">Address</label>
-                        <p class="form-control-plaintext border-bottom pb-2">{{ user.address|default:"Not provided" }}</p>
+            <!-- Address -->
+            <div class="info-section">
+                <h2 class="section-title">📍 Address</h2>
+                <div class="info-grid full">
+                    <div class="info-item">
+                        <span class="info-label">Delivery Address</span>
+                        <textarea name="address" class="profile-textarea" placeholder="Enter your delivery address">{{ user.address }}</textarea>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Account Status -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Account Status</label>
-                        <p class="form-control-plaintext border-bottom pb-2">
-                            {% if user.is_active %}
-                                <span class="badge bg-success">Active</span>
-                            {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                            {% endif %}
-                        </p>
+            <!-- Account Statistics -->
+            <div class="info-section">
+                <h2 class="section-title">📊 Account Statistics</h2>
+                <div class="info-grid">
+                    <div class="stat-box">
+                        <div class="stat-value">{{ user.orders.count }}</div>
+                        <div class="stat-label">Total Orders</div>
                     </div>
-
-                    <!-- Member Since -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Member Since</label>
-                        <p class="form-control-plaintext border-bottom pb-2">{{ user.date_joined|date:"d/m/Y" }}</p>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ user.wishlist_items.count }}</div>
+                        <div class="stat-label">Wishlist Items</div>
                     </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ user.cart_items.count }}</div>
+                        <div class="stat-label">Cart Items</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ user.date_joined|date:"M Y" }}</div>
+                        <div class="stat-label">Member Since</div>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Last Login -->
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-bold">Last Login</label>
-                        <p class="form-control-plaintext border-bottom pb-2">
+            <!-- Account Activity -->
+            <div class="info-section">
+                <h2 class="section-title">🔐 Account Activity</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Member Since</span>
+                        <span class="info-value">{{ user.date_joined|date:"d M Y" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Last Login</span>
+                        <span class="info-value">
                             {% if user.last_login %}
-                                {{ user.last_login|date:"d/m/Y H:i" }}
+                                {{ user.last_login|date:"d M Y, H:i" }}
                             {% else %}
                                 Never logged in
                             {% endif %}
-                        </p>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Account Status</span>
+                        <span class="info-value">
+                            {% if user.is_active %}
+                                <span style="color: #27ae60;">✅ Active</span>
+                            {% else %}
+                                <span style="color: #e74c3c;">❌ Inactive</span>
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-5 text-center">
-                    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-                    <a href="/" class="btn btn-secondary">Back to Home</a>
-                </div>
             </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button type="submit" class="btn-action btn-save">Save Changes</button>
+                <a href="{% url 'logout' %}" class="btn-action btn-logout">Sign Out</a>
+                <a href="/" class="btn-action btn-home">Back to Home</a>
+            </div>
+        </form>
         </div>
     </div>
 </div>
+
 {% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms & Conditions - Astra Market{% endblock %}
+
+{% block content %}
+<style>
+    .terms-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .terms-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .terms-intro {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 30px;
+        line-height: 1.8;
+    }
+
+    .terms-section {
+        margin-bottom: 30px;
+    }
+
+    .terms-section h3 {
+        font-size: 1.4rem;
+        color: #222;
+        margin-bottom: 12px;
+    }
+
+    .terms-section p,
+    .terms-section ul {
+        color: #555;
+        line-height: 1.8;
+        font-size: 1rem;
+    }
+
+    .terms-section ul {
+        padding-left: 20px;
+        margin-top: 12px;
+    }
+
+    .terms-section li {
+        margin-bottom: 10px;
+    }
+
+    .terms-footer {
+        background: #f8f9fa;
+        padding: 22px;
+        border-radius: 16px;
+        color: #333;
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .terms-footer a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .terms-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="terms-container">
+    <h1 class="terms-title">Terms & Conditions</h1>
+    <p class="terms-intro">Welcome to Astra Market. Please read these Terms & Conditions carefully before using our website, placing an order, or creating an account. By accessing or using Astra Market, you agree to be bound by these terms.</p>
+
+    <div class="terms-section">
+        <h3>1. Account Registration</h3>
+        <p>Creating an account on Astra Market requires accurate and complete information. You agree to keep your account credentials confidential and to notify us immediately if you suspect unauthorized access.</p>
+    </div>
+
+    <div class="terms-section">
+        <h3>2. Orders and Payment</h3>
+        <p>All orders are subject to acceptance and availability. Final order confirmation occurs after payment processing. We reserve the right to refuse or cancel orders for any reason, including incorrect prices or unavailable products.</p>
+        <ul>
+            <li>Prices displayed are in Indian Rupees (₹) unless stated otherwise.</li>
+            <li>Payment is required at the time of order placement.</li>
+            <li>We do not store your payment card details unless explicitly authorized.</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h3>3. Shipping and Delivery</h3>
+        <p>Shipping times are estimates only and not guaranteed. Delivery may be delayed due to unforeseen circumstances such as carrier issues, customs, or inclement weather.</p>
+        <ul>
+            <li>Free shipping is available on eligible orders as stated on the website.</li>
+            <li>Customers are responsible for providing an accurate shipping address.</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h3>4. Returns and Cancellations</h3>
+        <p>Returns and cancellations are governed by our return policy. Please review the policy carefully before placing an order.</p>
+        <ul>
+            <li>Orders may be cancelled while they are still pending.</li>
+            <li>Return requests are subject to eligibility and inspection.</li>
+            <li>Refunds will be processed according to the original payment method.</li>
+        </ul>
+    </div>
+
+    <div class="terms-section">
+        <h3>5. Customer Conduct</h3>
+        <p>Users agree to use Astra Market responsibly and legally. Prohibited activities include unauthorized access, misuse of content, and attempts to disrupt the site.</p>
+    </div>
+
+    <div class="terms-section">
+        <h3>6. Intellectual Property</h3>
+        <p>All content on Astra Market, including text, images, logos, and designs, is owned by Astra Market or its licensors and is protected by intellectual property laws.</p>
+    </div>
+
+    <div class="terms-section">
+        <h3>7. Changes to Terms</h3>
+        <p>We may update these Terms & Conditions from time to time. Continued use of the site after changes indicates your acceptance of the revised terms.</p>
+    </div>
+
+    <div class="terms-footer">
+        <p>If you have any questions about these terms, please contact us at <a href="mailto:info@astramarket.com">info@astramarket.com</a> or visit our <a href="{% url 'contact' %}">Contact</a> page.</p>
+    </div>
+</div>
+{% endblock %}

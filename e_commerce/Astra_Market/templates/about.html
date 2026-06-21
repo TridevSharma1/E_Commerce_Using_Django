@@ -2,100 +2,438 @@
 
 {% block title %}About Us - Astra Market{% endblock %}
 
+{% block extra_css %}
+<style>
+    .about-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .about-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .about-header p {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        position: relative;
+        z-index: 1;
+    }
+
+    .mission-section {
+        padding: 80px 0;
+        background: white;
+    }
+
+    .mission-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 50px;
+    }
+
+    .mission-card {
+        background: white;
+        padding: 40px 30px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border-top: 4px solid #667eea;
+    }
+
+    .mission-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+    }
+
+    .mission-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+
+    .mission-card h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .mission-card p {
+        color: #666;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .values-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #333;
+        text-align: center;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 50px;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .value-item {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        border-left: 4px solid #667eea;
+    }
+
+    .value-item h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .value-item p {
+        color: #666;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .team-section {
+        padding: 80px 0;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+        margin-top: 50px;
+    }
+
+    .team-member {
+        text-align: center;
+    }
+
+    .member-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 16px;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 2rem;
+    }
+
+    .avatar-1 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .avatar-2 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .avatar-3 {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .team-member h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .team-role {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+
+    .team-bio {
+        color: #666;
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+
+    .org-details {
+        background: linear-gradient(135deg, #e8f5ff 0%, #f0e8ff 100%);
+        padding: 40px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+    }
+
+    .org-details h4 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .detail-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .detail-label {
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .detail-value {
+        color: #333;
+    }
+
+    .detail-value a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .detail-value a:hover {
+        color: #764ba2;
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    .cta-section h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .cta-btn {
+        background: white;
+        color: #667eea;
+        padding: 14px 40px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        color: #667eea;
+    }
+
+    .back-btn {
+        display: inline-block;
+        background: #f0f0f0;
+        color: #667eea;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 40px;
+    }
+
+    .back-btn:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .mission-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .team-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .about-header h1 {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .detail-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12 text-center">
-            <h1 class="display-5 fw-bold">About Astra Market</h1>
-            <p class="lead text-muted">Delivering quality products with care — our mission is to make shopping delightful.</p>
-        </div>
-    </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="p-4 bg-white shadow-sm rounded">
-                <h4 class="fw-bold">Our Mission</h4>
-                <p class="small text-muted">To provide customers with high-quality products and excellent service by combining careful curation, fast delivery, and outstanding support.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-4 bg-white shadow-sm rounded">
-                <h4 class="fw-bold">Our Vision</h4>
-                <p class="small text-muted">To become the most trusted online marketplace where customers find value, variety, and convenience.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="p-4 bg-white shadow-sm rounded">
-                <h4 class="fw-bold">Our Values</h4>
-                <ul class="small text-muted mb-0">
-                    <li>Customer First</li>
-                    <li>Integrity & Transparency</li>
-                    <li>Quality Over Quantity</li>
-                    <li>Continuous Improvement</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-5">
-        <div class="col-12">
-            <h3 class="fw-bold">Our Team</h3>
-            <p class="text-muted small">A small group of passionate professionals focused on delivering the best shopping experience.</p>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:1.5rem;">AS</div>
-                    <h5 class="card-title mb-1">Anita Sharma</h5>
-                    <p class="small text-muted">Founder & CEO</p>
-                    <p class="small text-muted">Anita leads our team with a focus on customer experience and product curation.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:1.5rem;">RK</div>
-                    <h5 class="card-title mb-1">Rohit Kumar</h5>
-                    <p class="small text-muted">Head of Products</p>
-                    <p class="small text-muted">Rohit manages our product selection and supplier partnerships.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;font-size:1.5rem;">MS</div>
-                    <h5 class="card-title mb-1">Meera Singh</h5>
-                    <p class="small text-muted">Head of Operations</p>
-                    <p class="small text-muted">Meera ensures timely delivery and smooth logistics for our customers.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-5">
-        <div class="col-md-8">
-            <h4 class="fw-bold">Organization Details</h4>
-            <p class="small text-muted mb-1"><strong>Registered Name:</strong> Astra Market Pvt Ltd</p>
-            <p class="small text-muted mb-1"><strong>Address:</strong> 123 Market Street, Cityname, State - 123456</p>
-            <p class="small text-muted mb-1"><strong>GST/Tax ID:</strong> 12ABCDE3456F7Z8</p>
-            <p class="small text-muted mb-1"><strong>Email:</strong> <a href="mailto:info@astramarket.com">info@astramarket.com</a></p>
-            <p class="small text-muted"><strong>Phone:</strong> <a href="tel:+911234567890">+91 12345 67890</a></p>
-        </div>
-
-        <div class="col-md-4">
-            <h4 class="fw-bold">Want to join our team?</h4>
-            <p class="small text-muted">Check our Careers page for open roles and internship opportunities.</p>
-            <a href="#" class="btn btn-outline-primary btn-sm">View Careers</a>
-        </div>
-    </div>
-
-    <div class="text-center">
-        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+<!-- Header Section -->
+<div class="about-header">
+    <div class="container">
+        <h1>About Astra Market</h1>
+        <p>Delivering quality products with care — your trusted online marketplace</p>
     </div>
 </div>
+
+<div class="container">
+    <!-- Mission Section -->
+    <div class="mission-section">
+        <h2 class="section-title">Who We Are</h2>
+        <p class="section-subtitle">We believe in making online shopping simple, reliable, and enjoyable</p>
+
+        <div class="mission-cards">
+            <div class="mission-card">
+                <div class="mission-icon">🎯</div>
+                <h3>Our Mission</h3>
+                <p>To provide customers with high-quality products and excellent service by combining careful curation, fast delivery, and outstanding support.</p>
+            </div>
+            <div class="mission-card">
+                <div class="mission-icon">🔭</div>
+                <h3>Our Vision</h3>
+                <p>To become the most trusted online marketplace where customers find value, variety, and convenience in every purchase.</p>
+            </div>
+            <div class="mission-card">
+                <div class="mission-icon">💎</div>
+                <h3>Our Values</h3>
+                <p>Customer First • Integrity • Quality • Innovation • Sustainability in everything we do</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Values Section -->
+    <div class="values-section">
+        <h2 class="section-title">Our Core Values</h2>
+        <p class="section-subtitle">These principles guide every decision we make</p>
+
+        <div class="values-grid">
+            <div class="value-item">
+                <h4>👥 Customer First</h4>
+                <p>Every decision we make is centered around our customer's needs, satisfaction, and long-term trust.</p>
+            </div>
+            <div class="value-item">
+                <h4>🤝 Integrity & Transparency</h4>
+                <p>We believe in honest communication, transparent pricing, and fair dealings with every customer.</p>
+            </div>
+            <div class="value-item">
+                <h4>⭐ Quality Over Quantity</h4>
+                <p>We carefully curate our product selection, prioritizing quality and value over volume.</p>
+            </div>
+            <div class="value-item">
+                <h4>🚀 Continuous Improvement</h4>
+                <p>We constantly innovate and improve our services to provide the best shopping experience possible.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="team-section">
+        <h2 class="section-title">Meet Our Team</h2>
+        <p class="section-subtitle">Passionate professionals dedicated to your satisfaction</p>
+
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="member-avatar avatar-1">AS</div>
+                <h4>Anita Sharma</h4>
+                <div class="team-role">Founder & CEO</div>
+                <p class="team-bio">Visionary leader with a passion for customer experience and product excellence. Drives our company's mission forward.</p>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar avatar-2">RK</div>
+                <h4>Rohit Kumar</h4>
+                <div class="team-role">Head of Products</div>
+                <p class="team-bio">Expert in product curation and supplier partnerships. Ensures we offer only the best products.</p>
+            </div>
+            <div class="team-member">
+                <div class="member-avatar avatar-3">MS</div>
+                <h4>Meera Singh</h4>
+                <div class="team-role">Head of Operations</div>
+                <p class="team-bio">Operations maestro ensuring smooth logistics and timely delivery to every corner of the country.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Organization Details -->
+    <div style="margin: 80px 0;">
+        <h2 class="section-title">Organization Details</h2>
+
+        <div class="org-details">
+            <h4>📋 Company Information</h4>
+            <div class="detail-row">
+                <span class="detail-label">Registered Name:</span>
+                <span class="detail-value">Astra Market Pvt Ltd</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Address:</span>
+                <span class="detail-value">123 Market Street, Cityname, State - 123456</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">GST/Tax ID:</span>
+                <span class="detail-value">12ABCDE3456F7Z8</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value"><a href="mailto:info@astramarket.com">info@astramarket.com</a></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Phone:</span>
+                <span class="detail-value"><a href="tel:+911234567890">+91 12345 67890</a></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <h3>Join Our Growing Community</h3>
+        <p style="margin-bottom: 25px; font-size: 1.1rem;">Experience the Astra Market difference today</p>
+        <a href="{% url 'products' %}" class="cta-btn">Start Shopping Now</a>
+    </div>
+
+    <div style="text-align: center; margin: 40px 0;">
+        <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+    </div>
+</div>
+
 {% endblock %}

@@ -387,6 +387,13 @@
                     </div>
                 </div>
 
+                <div class="form-group" style="display:flex; align-items:flex-start; gap:12px; margin: 28px 0;">
+                    <input type="checkbox" id="accept_terms" name="accept_terms" required style="width:18px; height:18px; accent-color:#667eea; margin-top:4px;">
+                    <label for="accept_terms" style="color:#444; line-height:1.5;">
+                        I confirm that I have read and agree to the <a href="{% url 'terms' %}" style="color:#667eea; text-decoration:none;">Terms & Conditions</a>.
+                    </label>
+                </div>
+
                 <!-- Order Review -->
                 <h2 class="section-title" style="margin-top: 40px;">📋 Order Review</h2>
                 <p style="color: #666; margin-bottom: 15px;">Please verify your order items and total before confirming.</p>
