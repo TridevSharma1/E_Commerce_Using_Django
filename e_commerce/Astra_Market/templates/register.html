@@ -12,7 +12,7 @@
     }
 
     .auth-left {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-blue) 100%);
         color: white;
         padding: 60px 40px;
         display: flex;
@@ -123,7 +123,7 @@
 
     .form-group input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: var(--brand-blue);
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
@@ -136,7 +136,7 @@
     .register-btn {
         width: 100%;
         padding: 14px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -162,14 +162,14 @@
     }
 
     .auth-footer a {
-        color: #667eea;
+        color: var(--brand-blue);
         text-decoration: none;
         font-weight: 600;
         transition: color 0.3s ease;
     }
 
     .auth-footer a:hover {
-        color: #764ba2;
+        color: var(--brand-orange);
     }
 
     @media (max-width: 768px) {
@@ -243,6 +243,17 @@
             </div>
 
             <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input
+                    type="tel"
+                    id="mobile"
+                    name="mobile"
+                    placeholder="Enter your mobile number"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
                 <label for="password">Password</label>
                 <input
                     type="password"
@@ -266,9 +277,9 @@
             </div>
 
             <div class="form-group" style="display:flex; align-items:flex-start; gap:12px; margin-bottom:18px;">
-                <input type="checkbox" id="accept_terms" name="accept_terms" required style="width:18px; height:18px; accent-color:#667eea; margin-top:4px;">
+                <input type="checkbox" id="accept_terms" name="accept_terms" required style="width:18px; height:18px; accent-color:var(--brand-blue); margin-top:4px;">
                 <label for="accept_terms" style="color:#444; line-height:1.5;">
-                    I agree to the <a href="{% url 'terms' %}" style="color:#667eea; text-decoration:none;">Terms & Conditions</a>.
+                    I agree to the <a href="{% url 'terms' %}" style="color:var(--brand-blue); text-decoration:none;">Terms & Conditions</a>.
                 </label>
             </div>
 

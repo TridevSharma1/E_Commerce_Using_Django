@@ -12,7 +12,7 @@
     }
 
     .auth-left {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-blue) 100%);
         color: white;
         padding: 60px 40px;
         display: flex;
@@ -122,7 +122,7 @@
 
     .form-group input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: var(--brand-blue);
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
@@ -135,7 +135,7 @@
 
     .checkbox-wrapper input {
         width: auto;
-        accent-color: #667eea;
+        accent-color: var(--brand-blue);
     }
 
     .checkbox-wrapper label {
@@ -149,20 +149,20 @@
     }
 
     .forgot-link a {
-        color: #667eea;
+        color: var(--brand-blue);
         text-decoration: none;
         font-weight: 600;
         transition: color 0.3s ease;
     }
 
     .forgot-link a:hover {
-        color: #764ba2;
+        color: var(--brand-orange);
     }
 
     .login-btn {
         width: 100%;
         padding: 14px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -201,14 +201,14 @@
     }
 
     .auth-footer a {
-        color: #667eea;
+        color: var(--brand-blue);
         text-decoration: none;
         font-weight: 600;
         transition: color 0.3s ease;
     }
 
     .auth-footer a:hover {
-        color: #764ba2;
+        color: var(--brand-orange);
     }
 
     @media (max-width: 768px) {

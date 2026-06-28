@@ -5,7 +5,7 @@
 {% block extra_css %}
 <style>
     .profile-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         color: white;
         padding: 60px 0;
         margin-bottom: 40px;
@@ -45,7 +45,7 @@
     .profile-select:focus,
     .profile-textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: var(--brand-blue);
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
     }
 
@@ -55,7 +55,7 @@
     }
 
     .btn-save {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         color: white;
     }
 
@@ -67,7 +67,7 @@
     .profile-avatar-section {
         text-align: center;
         padding: 40px 20px;
-        background: #f8f9fa;
+        background: var(--brand-surface);
         border-bottom: 1px solid #e0e0e0;
     }
 
@@ -85,7 +85,7 @@
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -105,7 +105,7 @@
 
     .profile-avatar-status {
         display: inline-block;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--brand-blue), var(--brand-orange));
         color: white;
         padding: 4px 14px;
         border-radius: 50px;
@@ -160,13 +160,13 @@
     }
 
     .info-value a {
-        color: #667eea;
+        color: var(--brand-blue);
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .info-value a:hover {
-        color: #764ba2;
+        color: var(--brand-orange);
     }
 
     .info-grid.full {
@@ -194,7 +194,7 @@
     }
 
     .btn-logout {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);
+        background: linear-gradient(135deg, var(--brand-orange-dark) 0%, #ff8a3d 100%);
         color: white;
     }
 
@@ -207,17 +207,17 @@
 
     .btn-home {
         background: #f0f0f0;
-        color: #667eea;
-        border: 2px solid #667eea;
+        color: var(--brand-blue);
+        border: 2px solid var(--brand-blue);
     }
 
     .btn-home:hover {
-        background: #667eea;
+        background: var(--brand-blue);
         color: white;
     }
 
     .stat-box {
-        background: #f8f9fa;
+        background: var(--brand-surface);
         padding: 20px;
         border-radius: 12px;
         text-align: center;
@@ -227,7 +227,7 @@
     .stat-value {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #667eea;
+        color: var(--brand-blue);
         margin-bottom: 5px;
     }
 
@@ -408,6 +408,10 @@
             <!-- Action Buttons -->
             <div class="action-buttons">
                 <button type="submit" class="btn-action btn-save">Save Changes</button>
+                <form method="post" action="{% url 'delete_account' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-action btn-logout" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">Delete Account</button>
+                </form>
                 <a href="{% url 'logout' %}" class="btn-action btn-logout">Sign Out</a>
                 <a href="/" class="btn-action btn-home">Back to Home</a>
             </div>

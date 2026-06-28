@@ -7,7 +7,7 @@
 <style>
     /* Breadcrumb */
     .breadcrumb-section {
-        background: #f8f9fa;
+        background: var(--brand-surface);
         padding: 15px 0;
         margin-bottom: 30px;
     }
@@ -18,13 +18,13 @@
     }
 
     .breadcrumb-item a {
-        color: #667eea;
+        color: var(--brand-blue);
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .breadcrumb-item a:hover {
-        color: #764ba2;
+        color: var(--brand-orange);
         text-decoration: underline;
     }
 
@@ -71,7 +71,7 @@
         position: absolute;
         top: 20px;
         right: 20px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--brand-blue), var(--brand-orange));
         color: white;
         padding: 10px 20px;
         border-radius: 50px;
@@ -91,7 +91,7 @@
 
     .product-category-badge {
         display: inline-block;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--brand-blue), var(--brand-orange));
         color: white;
         padding: 8px 16px;
         border-radius: 50px;
@@ -126,7 +126,7 @@
     .product-price {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #667eea;
+        color: var(--brand-blue);
         margin-bottom: 10px;
     }
 
@@ -161,10 +161,10 @@
     }
 
     .feature-item {
-        background: #f8f9fa;
+        background: var(--brand-surface);
         padding: 15px;
         border-radius: 10px;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid var(--brand-blue);
         display: flex;
         gap: 10px;
     }
@@ -203,7 +203,7 @@
     }
 
     .btn-primary-action {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--brand-blue), var(--brand-orange));
         color: white;
     }
 
@@ -214,14 +214,14 @@
 
     .btn-secondary-action {
         background: white;
-        color: #667eea;
-        border: 2px solid #667eea;
+        color: var(--brand-blue);
+        border: 2px solid var(--brand-blue);
     }
 
     .btn-secondary-action:hover {
-        background: #f8f9fa;
-        border-color: #764ba2;
-        color: #764ba2;
+        background: var(--brand-surface);
+        border-color: var(--brand-orange);
+        color: var(--brand-orange);
     }
 
     .btn-wishlist {
@@ -230,7 +230,7 @@
 
     /* Trust Badges */
     .trust-section {
-        background: #f8f9fa;
+        background: var(--brand-surface);
         padding: 20px;
         border-radius: 12px;
         margin-bottom: 30px;
@@ -320,7 +320,7 @@
     .related-price {
         font-size: 1.2rem;
         font-weight: 700;
-        color: #667eea;
+        color: var(--brand-blue);
     }
 
     /* Categories Section */
@@ -348,7 +348,7 @@
         text-align: center;
         padding: 25px;
         border-radius: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         color: white;
         text-decoration: none;
         transition: all 0.3s ease;
@@ -430,7 +430,7 @@
 
     .featured-product-category {
         font-size: 0.8rem;
-        color: #667eea;
+        color: var(--brand-blue);
         font-weight: 600;
         margin-bottom: 8px;
         display: block;
@@ -450,14 +450,14 @@
     .featured-product-price {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #667eea;
+        color: var(--brand-blue);
     }
 
     .featured-badge {
         position: absolute;
         top: 10px;
         right: 10px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, var(--brand-blue), var(--brand-orange));
         color: white;
         padding: 6px 12px;
         border-radius: 50px;
@@ -627,7 +627,7 @@
                 </div>
             </div>
 
-            <a href="{% url 'products' %}" style="display: inline-block; color: #667eea; text-decoration: none; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateX(-5px)'" onmouseout="this.style.transform='translateX(0)'">
+            <a href="{% url 'products' %}" style="display: inline-block; color: var(--brand-blue); text-decoration: none; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.transform='translateX(-5px)'" onmouseout="this.style.transform='translateX(0)'">
                 <i class="bi bi-arrow-left"></i> Back to Products
             </a>
         </div>

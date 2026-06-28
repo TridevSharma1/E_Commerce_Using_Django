@@ -30,7 +30,7 @@
     .checkout-header h1 {
         font-size: 2.5rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -93,7 +93,7 @@
     .form-group input:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: var(--brand-blue);
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
@@ -129,7 +129,7 @@
         width: 20px;
         height: 20px;
         cursor: pointer;
-        accent-color: #667eea;
+        accent-color: var(--brand-blue);
     }
 
     .checkbox-wrapper label {
@@ -230,7 +230,7 @@
 
     .order-item-price {
         font-weight: 700;
-        color: #667eea;
+        color: var(--brand-blue);
     }
 
     .order-summary-divider {
@@ -248,12 +248,12 @@
     .summary-row.total {
         font-weight: 700;
         font-size: 1.1rem;
-        color: #667eea;
+        color: var(--brand-blue);
     }
 
     .submit-btn {
         width: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-orange) 100%);
         color: white;
         border: none;
         padding: 16px;
@@ -277,8 +277,8 @@
     .back-btn {
         width: 100%;
         background: #f0f0f0;
-        color: #667eea;
-        border: 2px solid #667eea;
+        color: var(--brand-blue);
+        border: 2px solid var(--brand-blue);
         padding: 12px;
         border-radius: 12px;
         font-size: 0.95rem;
@@ -292,7 +292,7 @@
     }
 
     .back-btn:hover {
-        background: #667eea;
+        background: var(--brand-blue);
         color: white;
     }
 
@@ -300,14 +300,14 @@
         background: linear-gradient(135deg, #e8f5ff 0%, #f0e8ff 100%);
         padding: 15px;
         border-radius: 8px;
-        border-left: 4px solid #667eea;
+        border-left: 4px solid var(--brand-blue);
         font-size: 0.9rem;
         color: #555;
         margin-bottom: 20px;
     }
 
     .info-box strong {
-        color: #667eea;
+        color: var(--brand-blue);
     }
 
     /* Responsive */
@@ -388,9 +388,9 @@
                 </div>
 
                 <div class="form-group" style="display:flex; align-items:flex-start; gap:12px; margin: 28px 0;">
-                    <input type="checkbox" id="accept_terms" name="accept_terms" required style="width:18px; height:18px; accent-color:#667eea; margin-top:4px;">
+                    <input type="checkbox" id="accept_terms" name="accept_terms" required style="width:18px; height:18px; accent-color:var(--brand-blue); margin-top:4px;">
                     <label for="accept_terms" style="color:#444; line-height:1.5;">
-                        I confirm that I have read and agree to the <a href="{% url 'terms' %}" style="color:#667eea; text-decoration:none;">Terms & Conditions</a>.
+                        I confirm that I have read and agree to the <a href="{% url 'terms' %}" style="color:var(--brand-blue); text-decoration:none;">Terms & Conditions</a>.
                     </label>
                 </div>
 

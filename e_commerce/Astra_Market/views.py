@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
+from django.utils.text import slugify
 from decimal import Decimal
 from datetime import datetime
 from .models import CustomUser, Feedback, Product, Category, CartItem, WishlistItem, Order, OrderItem
@@ -24,13 +25,14 @@ def register(request):
     Handles both GET (display form) and POST (process registration).
     """
     if request.method == 'POST':
-        full_name = request.POST.get('full_name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        full_name = request.POST.get('full_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
         
         # Validation
-        if not all([full_name, email, password, confirm_password]):
+        if not all([full_name, email, mobile, password, confirm_password]):
             messages.error(request, 'All fields are required.')
             return redirect('register')
         
@@ -49,12 +51,17 @@ def register(request):
         if CustomUser.objects.filter(email=email).exists():
             messages.error(request, 'Email already registered.')
             return redirect('register')
+
+        if CustomUser.objects.filter(mobile=mobile).exists():
+            messages.error(request, 'This mobile number is already registered.')
+            return redirect('register')
         
         try:
             user = CustomUser.objects.create_user(
                 email=email,
                 password=password,
-                full_name=full_name
+                full_name=full_name,
+                mobile=mobile,
             )
             messages.success(request, 'Account created successfully! Please log in.')
             return redirect('login')
@@ -112,7 +119,7 @@ def profile(request):
     """
     user = request.user
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'delete_account' not in request.POST:
         full_name = request.POST.get('full_name', '').strip()
         mobile = request.POST.get('mobile', '').strip()
         alternate_mobile = request.POST.get('alternate_mobile', '').strip()
@@ -150,6 +157,19 @@ def profile(request):
     return render(request, 'profile.html', {'user': user})
 
 
+@login_required(login_url='login')
+def delete_account(request):
+    """
+    Delete the logged-in user's account.
+    """
+    if request.method == 'POST':
+        user = request.user
+        user.delete()
+        logout(request)
+        messages.success(request, 'Your account has been deleted successfully.')
+    return redirect('register')
+
+
 def about(request):
     """
     About page.
@@ -166,8 +186,41 @@ def terms(request):
 
 def products(request):
     """
-    Products listing page.
+    Products listing page and staff-only creation form.
     """
+    if request.method == 'POST':
+        if not request.user.is_authenticated or not request.user.is_staff:
+            messages.error(request, 'Only staff users can add products.')
+            return redirect('products')
+
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        price = request.POST.get('price', '').strip()
+        category_id = request.POST.get('category')
+        image = request.FILES.get('image')
+
+        if not all([title, price, category_id]):
+            messages.error(request, 'Title, price, and category are required.')
+            return redirect('products')
+
+        category = get_object_or_404(Category, id=category_id)
+        slug = slugify(title)
+        counter = 1
+        while Product.objects.filter(slug=slug).exists():
+            slug = f'{slugify(title)}-{counter}'
+            counter += 1
+
+        Product.objects.create(
+            title=title,
+            slug=slug,
+            category=category,
+            description=description,
+            price=Decimal(price),
+            image=image,
+        )
+        messages.success(request, f'Product "{title}" created successfully.')
+        return redirect('products')
+
     query = request.GET.get('q', '').strip()
     category_slug = request.GET.get('category', '').strip()
     products = Product.objects.all()
@@ -193,13 +246,44 @@ def products(request):
         'selected_category': category_slug,
         'selected_category_name': selected_category_name,
         'feedbacks': feedbacks,
+        'is_staff': getattr(request.user, 'is_staff', False),
     })
 
 
 def category(request):
     """
-    Category listing page.
+    Category listing page and staff-only creation form.
     """
+    if request.method == 'POST':
+        if not request.user.is_authenticated or not request.user.is_staff:
+            messages.error(request, 'Only staff users can create categories.')
+            return redirect('category')
+        name = request.POST.get('name', '').strip()
+        image = request.FILES.get('image')
+
+        if not name:
+            messages.error(request, 'Category name is required.')
+            return redirect('category')
+
+        if Category.objects.filter(name__iexact=name).exists():
+            messages.error(request, 'A category with this name already exists.')
+            return redirect('category')
+
+        if not image:
+            messages.error(request, 'Category image is required.')
+            return redirect('category')
+
+        base_slug = slugify(name)
+        slug = base_slug
+        counter = 1
+        while Category.objects.filter(slug=slug).exists():
+            slug = f'{base_slug}-{counter}'
+            counter += 1
+
+        Category.objects.create(name=name, slug=slug, image=image)
+        messages.success(request, f'Category "{name}" created successfully.')
+        return redirect('category')
+
     categories = Category.objects.annotate(product_count=Count('products'))
     return render(request, 'category.html', {'categories': categories})
 
