@@ -1,9 +1,18 @@
+import base64
+import hashlib
+import hmac
+import json
+import urllib.request
+
+from django.conf import settings
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
+from django.urls import reverse
 from django.utils.text import slugify
 from decimal import Decimal
 from datetime import datetime
@@ -433,70 +442,168 @@ def checkout(request):
 
 
 @login_required(login_url='login')
+@require_POST
 def confirm_checkout(request):
     """
-    Confirm checkout and create order with address.
+    Confirm checkout and create a pending order with Razorpay payment initialization.
     """
-    if request.method == 'POST':
-        cart_items = CartItem.objects.filter(user=request.user).select_related('product')
-        if not cart_items:
-            messages.warning(request, 'Your cart is empty.')
-            return redirect('cart')
+    cart_items = CartItem.objects.filter(user=request.user).select_related('product')
+    if not cart_items:
+        if request.META.get('HTTP_X_REQUESTED_WITH', '').lower() == 'xmlhttprequest':
+            return JsonResponse({'success': False, 'message': 'Your cart is empty.'}, status=400)
+        messages.warning(request, 'Your cart is empty.')
+        return redirect('cart')
 
-        # Ensure terms are accepted
-        if request.POST.get('accept_terms') != 'on':
-            messages.error(request, 'Please accept the Terms & Conditions before placing your order.')
-            return redirect('checkout')
+    if request.POST.get('accept_terms') != 'on':
+        if request.META.get('HTTP_X_REQUESTED_WITH', '').lower() == 'xmlhttprequest':
+            return JsonResponse({'success': False, 'message': 'Please accept the Terms & Conditions before placing your order.'}, status=400)
+        messages.error(request, 'Please accept the Terms & Conditions before placing your order.')
+        return redirect('checkout')
 
-        # Get address information
-        shipping_name = request.POST.get('shipping_name', request.user.full_name)
-        shipping_address = request.POST.get('shipping_address', '').strip()
-        shipping_phone = request.POST.get('shipping_phone', '').strip()
-        use_saved_address = request.POST.get('use_saved_address') == 'on'
-        
-        # If using saved address from profile
-        if use_saved_address:
-            shipping_address = request.user.address or ''
-            shipping_phone = request.user.mobile or ''
-        
-        # Validate address
-        if not shipping_address:
-            messages.error(request, 'Please provide a shipping address.')
-            return redirect('checkout')
-        
-        if not shipping_phone:
-            messages.error(request, 'Please provide a phone number.')
-            return redirect('checkout')
-        
-        # Create order with address
-        total = sum(item.total_price for item in cart_items)
-        order = Order.objects.create(
-            user=request.user,
-            total_price=Decimal(total),
-            shipping_name=shipping_name,
-            shipping_address=shipping_address,
-            shipping_phone=shipping_phone,
-            status='pending'
+    shipping_name = request.POST.get('shipping_name', request.user.full_name)
+    shipping_address = request.POST.get('shipping_address', '').strip()
+    shipping_phone = request.POST.get('shipping_phone', '').strip()
+    use_saved_address = request.POST.get('use_saved_address') == 'on'
+
+    if use_saved_address:
+        shipping_address = request.user.address or ''
+        shipping_phone = request.user.mobile or ''
+
+    if not shipping_address or not shipping_phone:
+        error_message = 'Please provide a phone number.' if not shipping_phone else 'Please provide a shipping address.'
+        if request.META.get('HTTP_X_REQUESTED_WITH', '').lower() == 'xmlhttprequest':
+            return JsonResponse({'success': False, 'message': error_message}, status=400)
+        messages.error(request, error_message)
+        return redirect('checkout')
+
+    total = sum(item.total_price for item in cart_items)
+    amount_paise = int(Decimal(total) * Decimal('100'))
+    razorpay_order = create_razorpay_order(
+        amount_paise,
+        receipt=f'order_{request.user.id}_{int(datetime.utcnow().timestamp())}'
+    )
+
+    if not razorpay_order or razorpay_order.get('error'):
+        error_message = razorpay_order.get('error') if isinstance(razorpay_order, dict) else None
+        if request.META.get('HTTP_X_REQUESTED_WITH', '').lower() == 'xmlhttprequest':
+            return JsonResponse({
+                'success': False,
+                'message': f'Unable to initialize payment. {error_message or "Please try again."}'
+            }, status=500)
+        messages.error(request, f'Unable to initialize payment. {error_message or "Please try again."}')
+        return redirect('checkout')
+
+    order = Order.objects.create(
+        user=request.user,
+        total_price=Decimal(total),
+        shipping_name=shipping_name,
+        shipping_address=shipping_address,
+        shipping_phone=shipping_phone,
+        status='pending'
+    )
+
+    order_items = []
+    for item in cart_items:
+        order_items.append(OrderItem(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price
+        ))
+    OrderItem.objects.bulk_create(order_items)
+    cart_items.delete()
+
+    response_payload = {
+        'success': True,
+        'razorpay_key': settings.RAZORPAY_API_KEY,
+        'razorpay_order_id': razorpay_order.get('id'),
+        'amount': amount_paise,
+        'currency': 'INR',
+        'order_number': order.order_number,
+        'local_order_id': order.id,
+    }
+
+    if request.META.get('HTTP_X_REQUESTED_WITH', '').lower() == 'xmlhttprequest':
+        return JsonResponse(response_payload)
+
+    return render(request, 'razorpay_checkout.html', response_payload)
+
+
+def create_razorpay_order(amount, receipt):
+    """Create a Razorpay order using the Razorpay REST API."""
+    try:
+        data = json.dumps({
+            'amount': amount,
+            'currency': 'INR',
+            'receipt': receipt,
+            'payment_capture': 1,
+        }).encode()
+
+        request_obj = urllib.request.Request(
+            'https://api.razorpay.com/v1/orders',
+            data=data,
+            headers={'Content-Type': 'application/json'},
         )
 
-        # Create order items
-        order_items = []
-        for item in cart_items:
-            order_items.append(OrderItem(
-                order=order,
-                product=item.product,
-                quantity=item.quantity,
-                price=item.product.price
-            ))
-        OrderItem.objects.bulk_create(order_items)
-        
-        # Clear cart
-        cart_items.delete()
+        auth_string = f"{settings.RAZORPAY_API_KEY}:{settings.RAZORPAY_API_SECRET}"
+        auth_header = base64.b64encode(auth_string.encode()).decode()
+        request_obj.add_header('Authorization', f'Basic {auth_header}')
 
-        messages.success(request, f'Order #{order.id} placed successfully!')
+        with urllib.request.urlopen(request_obj, timeout=30) as response:
+            return json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        try:
+            body = exc.read().decode()
+        except Exception:
+            body = str(exc)
+        return {'error': f'Razorpay HTTP {exc.code}: {body}'}
+    except Exception as exc:
+        return {'error': str(exc)}
+
+
+@login_required(login_url='login')
+@require_POST
+def verify_payment(request):
+    """Verify Razorpay payment signature and complete the order."""
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse({'success': False, 'message': 'Invalid payment payload.'}, status=400)
+
+    payment_id = data.get('razorpay_payment_id')
+    razorpay_order_id = data.get('razorpay_order_id')
+    signature = data.get('razorpay_signature')
+    local_order_id = data.get('local_order_id')
+
+    if not all([payment_id, razorpay_order_id, signature, local_order_id]):
+        return JsonResponse({'success': False, 'message': 'Missing payment details.'}, status=400)
+
+    order = get_object_or_404(Order, id=local_order_id, user=request.user)
+    expected_signature = hmac.new(
+        settings.RAZORPAY_API_SECRET.encode(),
+        f"{razorpay_order_id}|{payment_id}".encode(),
+        hashlib.sha256,
+    ).hexdigest()
+
+    if signature != expected_signature:
+        return JsonResponse({'success': False, 'message': 'Payment verification failed.'}, status=400)
+
+    order.status = 'completed'
+    order.razorpay_order_id = razorpay_order_id
+    order.razorpay_payment_id = payment_id
+    order.save(update_fields=['status', 'razorpay_order_id', 'razorpay_payment_id', 'updated_at'])
+
+    return JsonResponse({'success': True, 'redirect_url': reverse('order_success', args=[order.id])})
+
+
+@login_required(login_url='login')
+def order_success(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status != 'completed':
+        messages.warning(request, 'Payment is not completed for this order yet.')
         return redirect('orders')
-    
-    return redirect('checkout')
+
+    return render(request, 'order_success.html', {'order': order})
 
 
 @login_required(login_url='login')

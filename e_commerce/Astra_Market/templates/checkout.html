@@ -15,7 +15,7 @@
     <div class="checkout-content">
         <!-- Address Form -->
         <div class="checkout-form-section">
-            <form method="POST" action="{% url 'confirm_checkout' %}">
+            <form id="checkout-form" method="POST" action="{% url 'confirm_checkout' %}">
                 {% csrf_token %}
 
                 <div class="info-box">
@@ -136,15 +136,115 @@
             preview.classList.add('active');
             form.style.opacity = '0.5';
             form.style.pointerEvents = 'none';
-            // Disable form inputs
             document.querySelectorAll('#address_form input, #address_form textarea').forEach(el => el.disabled = true);
         } else {
             preview.classList.remove('active');
             form.style.opacity = '1';
             form.style.pointerEvents = 'auto';
-            // Enable form inputs
             document.querySelectorAll('#address_form input, #address_form textarea').forEach(el => el.disabled = false);
         }
     }
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    async function placeOrder(event) {
+        event.preventDefault();
+        console.log('Checkout submit started');
+
+        const form = document.getElementById('checkout-form');
+        if (!form) {
+            alert('Checkout form not found.');
+            return;
+        }
+
+        const formData = new FormData(form);
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const fallback = await response.text();
+                console.error('Payment init failed', response.status, fallback);
+                alert('Unable to initialize payment. Please refresh and try again.');
+                return;
+            }
+
+            const data = await response.json();
+            console.log('Payment init response', data);
+            if (!data.success) {
+                alert(data.message || 'Unable to process payment.');
+                return;
+            }
+
+            if (!window.Razorpay) {
+                alert('Razorpay checkout library failed to load.');
+                return;
+            }
+
+            const options = {
+                key: data.razorpay_key,
+                amount: data.amount,
+                currency: data.currency,
+                order_id: data.razorpay_order_id,
+                name: 'Astra Market',
+                description: `Order ${data.order_number}`,
+                handler: async function (paymentResponse) {
+                    const verifyResponse = await fetch('{% url "verify_payment" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                        },
+                        body: JSON.stringify({
+                            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                            razorpay_order_id: paymentResponse.razorpay_order_id,
+                            razorpay_signature: paymentResponse.razorpay_signature,
+                            local_order_id: data.local_order_id,
+                        }),
+                    });
+
+                    const verifyData = await verifyResponse.json();
+                    if (verifyData.success) {
+                        window.location.href = verifyData.redirect_url;
+                    } else {
+                        alert(verifyData.message || 'Payment verification failed.');
+                    }
+                },
+                modal: {
+                    ondismiss: function () {
+                        alert('Payment process was cancelled. You can try again.');
+                    }
+                },
+                prefill: {
+                    name: document.getElementById('shipping_name').value,
+                    contact: document.getElementById('shipping_phone').value,
+                },
+                theme: {
+                    color: '#5E4BFF'
+                }
+            };
+
+            console.log('Opening Razorpay with options', options);
+            const rzp = new Razorpay(options);
+            rzp.open();
+        } catch (err) {
+            console.error('Payment initialization error', err);
+            alert('Unable to initialize payment. Please try again.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('checkout-form');
+        if (form) {
+            form.addEventListener('submit', placeOrder);
+        }
+    });
 </script>
 {% endblock %}

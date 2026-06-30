@@ -179,14 +179,30 @@ class Order(models.Model):
     cancellation_message = models.TextField(blank=True, null=True)
     cancelled_at = models.DateTimeField(blank=True, null=True)
     
+    order_number = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-created_at']
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        if is_new and self.order_number == '':
+            self.order_number = None
+
+        if is_new and not self.order_number:
+            super().save(*args, **kwargs)
+            self.order_number = f"ORD-{self.id:04d}"
+            super().save(update_fields=['order_number'])
+            return
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Order #{self.id} - {self.user.email}"
+        return f"Order {self.order_number or self.id} - {self.user.email}"
 
 
 class OrderItem(models.Model):

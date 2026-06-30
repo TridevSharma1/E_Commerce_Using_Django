@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pay with Razorpay{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1>Redirecting to payment...</h1>
+        <p>Please wait while we open Razorpay for your payment.</p>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    const options = {
+        key: '{{ razorpay_key }}',
+        amount: '{{ amount }}',
+        currency: '{{ currency }}',
+        order_id: '{{ razorpay_order_id }}',
+        name: 'Astra Market',
+        description: `Order {{ order_number }}`,
+        handler: async function (paymentResponse) {
+            const response = await fetch('{% url "verify_payment" %}', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({
+                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                    razorpay_order_id: paymentResponse.razorpay_order_id,
+                    razorpay_signature: paymentResponse.razorpay_signature,
+                    local_order_id: '{{ local_order_id }}',
+                }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert(data.message || 'Payment verification failed.');
+            }
+        },
+        modal: {
+            ondismiss: function () {
+                alert('Payment cancelled.');
+                window.location.href = '{% url "checkout" %}';
+            }
+        },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+</script>
+{% endblock %}

@@ -139,3 +139,8 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+# Razorpay API credentials
+RAZORPAY_API_KEY = 'rzp_test_T7tlsu1hWnQUvs'
+RAZORPAY_API_SECRET = 'GjT5R2xuPfnnpqp0Ny87WN0T'
+
